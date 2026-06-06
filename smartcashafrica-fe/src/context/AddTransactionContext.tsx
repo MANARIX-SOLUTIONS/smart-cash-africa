@@ -4,11 +4,11 @@ import {
   useContext,
   useMemo,
   useState,
-} from 'react';
+} from "react";
 import {
   AddTransactionSheet,
   type TransactionType,
-} from '@/components/ui/TransactionSheet';
+} from "@/components/ui/TransactionSheet";
 
 interface AddTransactionContextValue {
   open: boolean;
@@ -16,8 +16,9 @@ interface AddTransactionContextValue {
   closeAddTransaction: () => void;
 }
 
-const AddTransactionContext =
-  createContext<AddTransactionContextValue | null>(null);
+const AddTransactionContext = createContext<AddTransactionContextValue | null>(
+  null,
+);
 
 export function AddTransactionProvider({
   children,
@@ -25,12 +26,15 @@ export function AddTransactionProvider({
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
-  const [initialType, setInitialType] = useState<TransactionType>('expense');
+  const [initialType, setInitialType] = useState<TransactionType>("expense");
 
-  const openAddTransaction = useCallback((type: TransactionType = 'expense') => {
-    setInitialType(type);
-    setOpen(true);
-  }, []);
+  const openAddTransaction = useCallback(
+    (type: TransactionType = "expense") => {
+      setInitialType(type);
+      setOpen(true);
+    },
+    [],
+  );
 
   const closeAddTransaction = useCallback(() => setOpen(false), []);
 
@@ -54,7 +58,9 @@ export function AddTransactionProvider({
 export function useAddTransaction() {
   const ctx = useContext(AddTransactionContext);
   if (!ctx) {
-    throw new Error('useAddTransaction must be used within AddTransactionProvider');
+    throw new Error(
+      "useAddTransaction must be used within AddTransactionProvider",
+    );
   }
   return ctx;
 }

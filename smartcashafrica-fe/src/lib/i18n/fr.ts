@@ -344,7 +344,7 @@ export const fr: Messages = {
     invalidAmount: 'Entrez un montant valide supérieur à zéro',
     noAccountsTitle: 'Aucun compte pour le moment',
     noAccountsDesc:
-      'Connectez ou créez un compte avant d\'enregistrer des transactions.',
+      "Connectez ou créez un compte avant d'enregistrer des transactions.",
     noAccountsCta: 'Ajouter un compte',
     descPlaceholder: 'ex. Courses Shoprite',
     categories: {

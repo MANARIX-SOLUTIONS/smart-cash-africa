@@ -1,29 +1,23 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import {
-  X,
-  Loader2,
-  ArrowDownLeft,
-  ArrowUpRight,
-  Wallet,
-} from 'lucide-react';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
-import { useToast } from '@/context/ToastContext';
-import { useAppData } from '@/context/AppDataContext';
-import { useTranslation } from '@/context/I18nContext';
-import { getAccountDisplayName } from '@/lib/account-helpers';
-import { getCurrencyDefinition } from '@/lib/currencies';
-import { translateCategory } from '@/lib/i18n/helpers';
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { X, Loader2, ArrowDownLeft, ArrowUpRight, Wallet } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { useToast } from "@/context/ToastContext";
+import { useAppData } from "@/context/AppDataContext";
+import { useTranslation } from "@/context/I18nContext";
+import { getAccountDisplayName } from "@/lib/account-helpers";
+import { getCurrencyDefinition } from "@/lib/currencies";
+import { translateCategory } from "@/lib/i18n/helpers";
 import {
   EXPENSE_CATEGORIES,
   INCOME_CATEGORIES,
   QUICK_AMOUNTS_DECIMAL,
   QUICK_AMOUNTS_ZERO_DECIMAL,
-} from '@/lib/transaction-categories';
-import { cn } from '@/lib/utils';
+} from "@/lib/transaction-categories";
+import { cn } from "@/lib/utils";
 
-export type TransactionType = 'income' | 'expense';
+export type TransactionType = "income" | "expense";
 
 interface AddTransactionSheetProps {
   open: boolean;
@@ -37,7 +31,7 @@ function todayIso() {
 
 export function AddTransactionSheet({
   open,
-  initialType = 'expense',
+  initialType = "expense",
   onClose,
 }: AddTransactionSheetProps) {
   const { accounts, addTransaction, preferences } = useAppData();
@@ -46,17 +40,17 @@ export function AddTransactionSheet({
   const currencyDef = getCurrencyDefinition(preferences.currency);
 
   const [txType, setTxType] = useState<TransactionType>(initialType);
-  const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState('');
+  const [description, setDescription] = useState("");
+  const [amount, setAmount] = useState("");
   const [date, setDate] = useState(todayIso());
-  const [category, setCategory] = useState('');
-  const [account, setAccount] = useState('');
+  const [category, setCategory] = useState("");
+  const [account, setAccount] = useState("");
   const [addAnother, setAddAnother] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [formError, setFormError] = useState('');
+  const [formError, setFormError] = useState("");
 
   const categories =
-    txType === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+    txType === "income" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
 
   const quickAmounts =
     currencyDef.decimals === 0
@@ -66,47 +60,47 @@ export function AddTransactionSheet({
   useEffect(() => {
     if (!open) return;
     setTxType(initialType);
-    setDescription('');
-    setAmount('');
+    setDescription("");
+    setAmount("");
     setDate(todayIso());
-    setCategory('');
-    setAccount(accounts[0]?.provider ?? '');
-    setFormError('');
+    setCategory("");
+    setAccount(accounts[0]?.provider ?? "");
+    setFormError("");
     setAddAnother(false);
   }, [open, initialType, accounts]);
 
   useEffect(() => {
-    setCategory('');
+    setCategory("");
   }, [txType]);
 
   const amountLabel = useMemo(
-    () => t('transactions.amountLabel', { symbol: currencyDef.symbol }),
+    () => t("transactions.amountLabel", { symbol: currencyDef.symbol }),
     [t, currencyDef.symbol],
   );
 
   if (!open) return null;
 
   const resetForm = (keepType = true) => {
-    setDescription('');
-    setAmount('');
+    setDescription("");
+    setAmount("");
     setDate(todayIso());
-    setCategory('');
-    setFormError('');
+    setCategory("");
+    setFormError("");
     if (!keepType) setTxType(initialType);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormError('');
+    setFormError("");
 
     if (!description.trim() || !amount || !category || !account) {
-      setFormError(t('transactions.requiredFields'));
+      setFormError(t("transactions.requiredFields"));
       return;
     }
 
     const numericAmount = Number(amount);
     if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
-      setFormError(t('transactions.invalidAmount'));
+      setFormError(t("transactions.invalidAmount"));
       return;
     }
 
@@ -122,11 +116,11 @@ export function AddTransactionSheet({
     });
     setIsLoading(false);
     toast(
-      t('transactions.recorded', {
-        type: t(txType === 'income' ? 'common.income' : 'common.expense'),
+      t("transactions.recorded", {
+        type: t(txType === "income" ? "common.income" : "common.expense"),
         amount: formatMoney(numericAmount),
       }),
-      'success',
+      "success",
     );
 
     if (addAnother) {
@@ -143,17 +137,17 @@ export function AddTransactionSheet({
         type="button"
         className="absolute inset-0 bg-overlay backdrop-blur-sm"
         onClick={onClose}
-        aria-label={t('common.close')}
+        aria-label={t("common.close")}
       />
       <div
         className={cn(
-          'relative flex max-h-[92vh] w-full max-w-lg flex-col',
-          'rounded-t-2xl bg-card shadow-2xl animate-slide-up sm:rounded-2xl',
+          "relative flex max-h-[92vh] w-full max-w-lg flex-col",
+          "rounded-t-2xl bg-card shadow-2xl animate-slide-up sm:rounded-2xl",
         )}
       >
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <h2 className="text-xl font-semibold text-navy">
-            {t('transactions.addTitle')}
+            {t("transactions.addTitle")}
           </h2>
           <button
             type="button"
@@ -167,12 +161,12 @@ export function AddTransactionSheet({
         <div className="overflow-y-auto px-6 py-4">
           <div
             className={cn(
-              'mb-5 grid grid-cols-2 gap-2 rounded-xl',
-              'border border-border bg-surface p-1',
+              "mb-5 grid grid-cols-2 gap-2 rounded-xl",
+              "border border-border bg-surface p-1",
             )}
           >
-            {(['expense', 'income'] as const).map((type) => {
-              const Icon = type === 'income' ? ArrowDownLeft : ArrowUpRight;
+            {(["expense", "income"] as const).map((type) => {
+              const Icon = type === "income" ? ArrowDownLeft : ArrowUpRight;
               const active = txType === type;
               return (
                 <button
@@ -180,20 +174,20 @@ export function AddTransactionSheet({
                   type="button"
                   onClick={() => setTxType(type)}
                   className={cn(
-                    'flex items-center justify-center gap-2 rounded-lg',
-                    'px-3 py-2.5 text-sm font-medium transition-all',
+                    "flex items-center justify-center gap-2 rounded-lg",
+                    "px-3 py-2.5 text-sm font-medium transition-all",
                     active
-                      ? type === 'income'
-                        ? 'bg-success/15 text-success shadow-sm'
-                        : 'bg-error/15 text-error shadow-sm'
-                      : 'text-muted hover:text-navy',
+                      ? type === "income"
+                        ? "bg-success/15 text-success shadow-sm"
+                        : "bg-error/15 text-error shadow-sm"
+                      : "text-muted hover:text-navy",
                   )}
                 >
                   <Icon className="h-4 w-4" />
                   {t(
-                    type === 'income'
-                      ? 'transactions.addIncome'
-                      : 'transactions.addExpense',
+                    type === "income"
+                      ? "transactions.addIncome"
+                      : "transactions.addExpense",
                   )}
                 </button>
               );
@@ -204,31 +198,31 @@ export function AddTransactionSheet({
             <div className="rounded-xl border border-dashed border-border p-6 text-center">
               <div
                 className={cn(
-                  'mx-auto mb-3 flex h-12 w-12 items-center',
-                  'justify-center rounded-xl bg-primary-light text-primary',
+                  "mx-auto mb-3 flex h-12 w-12 items-center",
+                  "justify-center rounded-xl bg-primary-light text-primary",
                 )}
               >
                 <Wallet className="h-6 w-6" />
               </div>
               <p className="font-medium text-navy">
-                {t('transactions.noAccountsTitle')}
+                {t("transactions.noAccountsTitle")}
               </p>
               <p className="mt-1 text-sm text-muted">
-                {t('transactions.noAccountsDesc')}
+                {t("transactions.noAccountsDesc")}
               </p>
               <Link
                 to="/accounts/connect"
                 onClick={onClose}
                 className="mt-4 inline-flex"
               >
-                <Button type="button">{t('transactions.noAccountsCta')}</Button>
+                <Button type="button">{t("transactions.noAccountsCta")}</Button>
               </Link>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <Input
-                label={t('common.description')}
-                placeholder={t('transactions.descPlaceholder')}
+                label={t("common.description")}
+                placeholder={t("transactions.descPlaceholder")}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 autoFocus
@@ -239,15 +233,15 @@ export function AddTransactionSheet({
                   label={amountLabel}
                   type="number"
                   inputMode="decimal"
-                  placeholder={t('common.placeholders.amountExample')}
+                  placeholder={t("common.placeholders.amountExample")}
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   min="0"
-                  step={currencyDef.decimals === 0 ? '1' : '0.01'}
+                  step={currencyDef.decimals === 0 ? "1" : "0.01"}
                 />
                 <div>
                   <p className="mb-2 text-xs font-medium text-muted">
-                    {t('transactions.quickAmounts')}
+                    {t("transactions.quickAmounts")}
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {quickAmounts.map((value) => (
@@ -256,11 +250,11 @@ export function AddTransactionSheet({
                         type="button"
                         onClick={() => setAmount(String(value))}
                         className={cn(
-                          'rounded-full border px-3 py-1 text-xs font-medium',
-                          'transition-all hover:border-primary/40',
+                          "rounded-full border px-3 py-1 text-xs font-medium",
+                          "transition-all hover:border-primary/40",
                           Number(amount) === value
-                            ? 'border-primary bg-primary-light text-primary'
-                            : 'border-border text-muted',
+                            ? "border-primary bg-primary-light text-primary"
+                            : "border-border text-muted",
                         )}
                       >
                         {formatMoney(value)}
@@ -271,7 +265,7 @@ export function AddTransactionSheet({
               </div>
 
               <Input
-                label={t('common.date')}
+                label={t("common.date")}
                 type="date"
                 value={date}
                 max={todayIso()}
@@ -280,7 +274,7 @@ export function AddTransactionSheet({
 
               <div>
                 <label className="text-sm font-medium text-navy">
-                  {t('common.category')}
+                  {t("common.category")}
                 </label>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {categories.map((cat) => (
@@ -289,11 +283,11 @@ export function AddTransactionSheet({
                       type="button"
                       onClick={() => setCategory(cat)}
                       className={cn(
-                        'rounded-full border px-3 py-1.5 text-xs font-medium',
-                        'transition-all',
+                        "rounded-full border px-3 py-1.5 text-xs font-medium",
+                        "transition-all",
                         category === cat
-                          ? 'border-primary bg-primary-light text-primary'
-                          : 'border-border text-muted hover:border-primary/30',
+                          ? "border-primary bg-primary-light text-primary"
+                          : "border-border text-muted hover:border-primary/30",
                       )}
                     >
                       {translateCategory(t, cat)}
@@ -304,7 +298,7 @@ export function AddTransactionSheet({
 
               <div>
                 <label className="text-sm font-medium text-navy">
-                  {t('common.account')}
+                  {t("common.account")}
                 </label>
                 <div className="mt-2 space-y-2">
                   {accounts.map((a) => {
@@ -315,18 +309,18 @@ export function AddTransactionSheet({
                         type="button"
                         onClick={() => setAccount(a.provider)}
                         className={cn(
-                          'flex w-full items-center gap-3 rounded-xl',
-                          'border p-3 text-left transition-all',
+                          "flex w-full items-center gap-3 rounded-xl",
+                          "border p-3 text-left transition-all",
                           selected
-                            ? 'border-primary bg-primary-light/50'
-                            : 'border-border hover:border-primary/30',
+                            ? "border-primary bg-primary-light/50"
+                            : "border-border hover:border-primary/30",
                         )}
                       >
                         <div
                           className={cn(
-                            'flex h-10 w-10 shrink-0 items-center',
-                            'justify-center rounded-xl text-sm font-bold',
-                            'text-white',
+                            "flex h-10 w-10 shrink-0 items-center",
+                            "justify-center rounded-xl text-sm font-bold",
+                            "text-white",
                           )}
                           style={{ backgroundColor: a.color }}
                         >
@@ -349,8 +343,8 @@ export function AddTransactionSheet({
 
               <label
                 className={cn(
-                  'flex cursor-pointer items-center gap-2',
-                  'text-sm text-muted',
+                  "flex cursor-pointer items-center gap-2",
+                  "text-sm text-muted",
                 )}
               >
                 <input
@@ -359,7 +353,7 @@ export function AddTransactionSheet({
                   onChange={(e) => setAddAnother(e.target.checked)}
                   className="h-4 w-4 rounded border-border text-primary"
                 />
-                {t('transactions.addAnother')}
+                {t("transactions.addAnother")}
               </label>
 
               {formError && (
@@ -376,10 +370,10 @@ export function AddTransactionSheet({
               >
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
-                ) : txType === 'income' ? (
-                  t('transactions.saveIncome')
+                ) : txType === "income" ? (
+                  t("transactions.saveIncome")
                 ) : (
-                  t('transactions.saveExpense')
+                  t("transactions.saveExpense")
                 )}
               </Button>
             </form>
