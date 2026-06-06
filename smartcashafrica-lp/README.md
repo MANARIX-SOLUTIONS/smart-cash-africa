@@ -1,22 +1,103 @@
 # SmartCash Africa — Landing Page
 
-Premium fintech landing page for SmartCash Africa, built with React, TypeScript, Vite, and Tailwind CSS.
+Premium fintech marketing site for SmartCash Africa. Single-page experience built with React, TypeScript, Vite, and Tailwind CSS.
 
-## Getting Started
+Part of the [SmartCash Africa monorepo](../README.md). The authenticated app lives in [`smartcashafrica-fe`](../smartcashafrica-fe/).
+
+## Stack
+
+| Technology   | Version / notes          |
+| ------------ | ------------------------ |
+| React        | 19                       |
+| Vite         | 8                        |
+| TypeScript   | 6                        |
+| Tailwind CSS | 4                        |
+| Lucide React | Icons                    |
+| ESLint       | Linting (`npm run lint`) |
+
+## Getting started
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) to view the page.
+Open [http://localhost:5174](http://localhost:5174).
 
-## Build
+Run **both** LP and app from the repo root:
 
 ```bash
-npm run build
-npm run preview
+cd .. && npm run dev
 ```
+
+Web app: [http://localhost:5173](http://localhost:5173).
+
+## Scripts
+
+| Script            | Description                            |
+| ----------------- | -------------------------------------- |
+| `npm run dev`     | Dev server on port 5174                |
+| `npm run build`   | Typecheck + production build → `dist/` |
+| `npm run preview` | Preview production build               |
+| `npm run lint`    | ESLint                                 |
+
+## Environment
+
+Copy `.env.example` → `.env` for production:
+
+```env
+VITE_APP_URL=https://app.smartcashafrica.com
+```
+
+Dev default: `http://localhost:5173` (no `.env` required).
+
+CTAs (Sign In, Start Free, Pricing, Terms, Privacy) use `src/lib/links.ts` → `appLinks`.
+
+## Project structure
+
+```
+src/
+├── main.tsx              # I18nProvider, DemoProvider
+├── App.tsx               # Section composition (single page)
+├── components/
+│   ├── layout/           # Header (sticky), Footer
+│   ├── sections/         # Marketing sections (see below)
+│   └── ui/               # Button, Reveal, counters, mockup
+├── context/
+│   ├── I18nContext.tsx   # en, fr
+│   └── DemoContext.tsx   # Demo modal state
+├── hooks/
+│   ├── useInView.ts      # Scroll reveal triggers
+│   ├── useAnimatedCounter.ts
+│   └── useActiveSection.ts # Nav highlight on scroll
+└── lib/
+    ├── links.ts          # App URLs (signup, login, legal)
+    ├── utils.ts          # cn() helper
+    └── i18n/             # en.ts, fr.ts
+```
+
+See [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md) for LP ↔ app flow.
+
+## Page sections (scroll order)
+
+| #   | Section                  | Component         |
+| --- | ------------------------ | ----------------- |
+| 1   | Hero + dashboard mockup  | `Hero`            |
+| 2   | Partner logos            | `PartnerStrip`    |
+| 3   | Trust metrics (animated) | `Trust`           |
+| 4   | Problem / solution       | `ProblemSolution` |
+| 5   | Features grid            | `Features`        |
+| 6   | How it works (3 steps)   | `HowItWorks`      |
+| 7   | AI advisor (dark)        | `AIAdvisor`       |
+| 8   | Financial health widget  | `FinancialHealth` |
+| 9   | Testimonials carousel    | `Testimonials`    |
+| 10  | Security                 | `Security`        |
+| 11  | Pricing (Free + Premium) | `Pricing`         |
+| 12  | FAQ                      | `FAQ`             |
+| 13  | Final CTA                | `FinalCTA`        |
+| 14  | Footer                   | `Footer`          |
+
+Global chrome: `Header` (glassmorphism, language switcher), `ScrollProgress`, skip link for a11y.
 
 ## Linked to smartcashafrica-fe
 
@@ -24,20 +105,36 @@ npm run preview
 | --------------------- | --------------------- |
 | http://localhost:5174 | http://localhost:5173 |
 
-Dev defaults connect automatically. For production, copy `.env.example` → `.env` and set `VITE_APP_URL`.
+| LP action            | App destination |
+| -------------------- | --------------- |
+| Start Free / Sign up | `/signup`       |
+| Sign In              | `/login`        |
+| Terms                | `/terms`        |
+| Privacy              | `/privacy`      |
 
-Sign In, Start Free, Pricing, Terms, and Privacy link to the app. See [docs/LINKING.md](../docs/LINKING.md).
+Full linking guide: [docs/LINKING.md](../docs/LINKING.md).
 
 ## Languages
 
-French and English are supported. Use the globe switcher in the header to change language. The choice is saved in `localStorage` and defaults to French when the browser language is French.
+French and English. Header globe switcher; choice saved in `localStorage`.  
+Defaults to French when the browser language is French.
 
 Translation files:
 
 - `src/lib/i18n/en.ts`
 - `src/lib/i18n/fr.ts`
 
-## Design System
+Add keys under nested objects; access via `useTranslation()` and `t('key.path')`.
+
+## UX details
+
+- **Scroll progress** — Top bar shows read progress
+- **Reveal animations** — Sections animate in on scroll (`useInView`)
+- **Animated counters** — Trust metrics count up when visible
+- **Demo modal** — Interactive product preview (`DemoContext`)
+- **Active nav** — Header links highlight current section
+
+## Design system
 
 | Token             | Value     |
 | ----------------- | --------- |
@@ -47,18 +144,20 @@ Translation files:
 | Background        | `#F8FAFC` |
 | Font              | Inter     |
 
-## Sections
+Matches the web app for a consistent brand.
 
-1. Header (sticky, glassmorphism)
-2. Hero with dashboard mockup
-3. Trust metrics with animated counters
-4. Problem / Solution
-5. Features grid
-6. How It Works (3-step timeline)
-7. AI Advisor showcase (dark section)
-8. Financial Health Score widget
-9. Testimonials carousel
-10. Security
-11. Pricing (Free + Premium)
-12. Final CTA
-13. Footer
+## Build & deploy
+
+```bash
+npm run build
+```
+
+Deploy `dist/` to the marketing host (e.g. `smartcashafrica.com`).  
+Set `VITE_APP_URL` to the app domain at build time.
+
+## Related docs
+
+- [Monorepo overview](../README.md)
+- [Architecture](../docs/ARCHITECTURE.md)
+- [LP ↔ App linking](../docs/LINKING.md)
+- [Web app](../smartcashafrica-fe/README.md)
