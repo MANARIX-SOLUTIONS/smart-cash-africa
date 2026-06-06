@@ -1,0 +1,3 @@
+# Override global gitignore `lib/` — keep application source under src/lib/
+!**/src/lib/
+!**/src/lib/**
