@@ -30,22 +30,12 @@ function interpolate(template: string, params?: TranslationParams): string {
   });
 }
 
-export function detectBrowserLocale(): Locale {
-  if (typeof navigator === 'undefined') return 'fr';
-
-  const langs = navigator.languages?.length
-    ? navigator.languages
-    : [navigator.language];
-
-  for (const lang of langs) {
-    const code = lang.toLowerCase().split('-')[0];
-    if (code === 'wo') return 'wo';
-    if (code === 'fr') return 'fr';
-    if (code === 'en') return 'en';
-  }
-
-  return 'fr';
-}
+export {
+  detectBrowserLocale,
+  detectDefaultLocale,
+  isSenegaleseUser,
+  localeOrderForUser,
+} from './locale-detection';
 
 export function pluralize(
   locale: Locale,

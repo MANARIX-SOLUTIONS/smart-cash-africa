@@ -171,6 +171,9 @@ export const en = {
     welcomeTitle: 'Welcome, {name}!',
     welcomeSubtitle:
       "Let's set up your financial hub in under 2 minutes. We'll help you connect accounts, set goals, and get AI-powered insights.",
+    languageTitle: 'Choose your language',
+    languageSubtitle:
+      'Wolof is recommended for users in Senegal. You can change this anytime.',
     getStarted: 'Get started',
     connectTitle: 'Connect your accounts',
     connectSubtitle: 'Select the providers you use. You can add more later.',
@@ -681,6 +684,8 @@ export const en = {
       'Choose how SmartCash looks. System follows your device preference.',
     languageDesc:
       'SmartCash is available in French, English, and Wolof. Dates and amounts follow your locale.',
+    languageSenegalHint:
+      'Wolof is selected by default for users in Senegal. Choose another language if you prefer.',
     subscription: 'Subscription',
     privacy: 'Privacy',
     privacySub: 'Control your data and privacy preferences',

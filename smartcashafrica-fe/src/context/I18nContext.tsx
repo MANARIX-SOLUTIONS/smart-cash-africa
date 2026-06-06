@@ -56,7 +56,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
 
   const setLocale = useCallback(
     (next: Locale) => {
-      updatePreferences({ language: next });
+      updatePreferences({ language: next, languageManual: true });
     },
     [updatePreferences],
   );

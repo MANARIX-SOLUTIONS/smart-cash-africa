@@ -142,9 +142,20 @@ const overrides: Record<string, unknown> = {
     createButton: 'Sos compte bi',
     created: '{name} sos na bu baax',
   },
+  onboarding: {
+    languageTitle: 'Tann sa làkk',
+    languageSubtitle:
+      'Wolof la ñu laaj ci Senegaal. Man nga ko soppi saa yu la neexee.',
+    welcomeTitle: 'Dalal ak jamm, {name}!',
+    welcomeSubtitle:
+      'Nu taxawal sa kër bu xaalis ci 2 simili. Dina ñu la dimbali bokk sa comptes, def sa xalaat yi, am xibaar IA.',
+    getStarted: 'Tàmbali',
+  },
   settings: {
     languageDesc:
       'SmartCash am na ci français, anglais ak wolof. Bés yi ak xaalis yi topp sa locale.',
+    languageSenegalHint:
+      'Wolof la ñu tànn ci Senegaal. Tann beneen làkk bu la neexee.',
     currency: 'Devise',
     currencyDesc:
       'Tann devise bi ngir wone soldes, budgets ak transactions yi.',

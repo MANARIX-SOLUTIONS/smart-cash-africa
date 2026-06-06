@@ -65,6 +65,8 @@ export interface UserProfile {
 
 export interface AppPreferences {
   language: string;
+  /** When true, locale is not auto-adjusted for Senegal */
+  languageManual?: boolean;
   currency: string;
   notificationPrefs: Record<string, boolean>;
 }

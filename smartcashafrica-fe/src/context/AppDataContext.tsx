@@ -17,7 +17,12 @@ import { getAccountColor, getAccountInitials } from "@/lib/account-helpers";
 import { colorForCategory } from "@/lib/budget-helpers";
 import { downloadTransactionsCsv } from "@/lib/export";
 import { DEFAULT_CURRENCY, getCurrencyDefinition } from "@/lib/currencies";
-import { detectBrowserLocale, translate, type Locale } from "@/lib/i18n";
+import {
+  detectDefaultLocale,
+  isSenegaleseUser,
+  translate,
+  type Locale,
+} from "@/lib/i18n";
 import { getExportCsvHeaders } from "@/lib/i18n/helpers";
 import type {
   Account,
@@ -139,20 +144,41 @@ function loadInitialProfile(): UserProfile {
   );
 }
 
-function loadInitialPreferences(): AppPreferences {
-  const saved = loadJson<AppPreferences>(PREFS_KEY);
-  if (saved) {
-    return {
-      language: saved.language ?? detectBrowserLocale(),
-      currency: saved.currency ?? DEFAULT_CURRENCY,
-      notificationPrefs: saved.notificationPrefs ?? defaultNotificationPrefs,
-    };
+function isValidLocale(value: string): value is Locale {
+  return value === "en" || value === "fr" || value === "wo";
+}
+
+function resolveLanguage(
+  saved: AppPreferences | null,
+  profile: UserProfile,
+): Pick<AppPreferences, "language" | "languageManual"> {
+  const manual = saved?.languageManual ?? false;
+  const detected = detectDefaultLocale(profile);
+
+  if (saved?.language && isValidLocale(saved.language)) {
+    let language = saved.language;
+    if (
+      !manual &&
+      isSenegaleseUser(profile) &&
+      (language === "fr" || language === "en")
+    ) {
+      language = "wo";
+    }
+    return { language, languageManual: manual };
   }
 
+  return { language: detected, languageManual: false };
+}
+
+function loadInitialPreferences(profile: UserProfile): AppPreferences {
+  const saved = loadJson<AppPreferences>(PREFS_KEY);
+  const { language, languageManual } = resolveLanguage(saved, profile);
+
   return {
-    language: detectBrowserLocale(),
-    currency: DEFAULT_CURRENCY,
-    notificationPrefs: defaultNotificationPrefs,
+    language,
+    languageManual,
+    currency: saved?.currency ?? DEFAULT_CURRENCY,
+    notificationPrefs: saved?.notificationPrefs ?? defaultNotificationPrefs,
   };
 }
 
@@ -167,8 +193,8 @@ function predictDate(monthly: number, remaining: number): string {
 export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<PersistedData>(loadInitialData);
   const [profile, setProfile] = useState<UserProfile>(loadInitialProfile);
-  const [preferences, setPreferences] = useState<AppPreferences>(
-    loadInitialPreferences,
+  const [preferences, setPreferences] = useState<AppPreferences>(() =>
+    loadInitialPreferences(loadInitialProfile()),
   );
 
   useEffect(() => {
@@ -182,6 +208,14 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     localStorage.setItem(PREFS_KEY, JSON.stringify(preferences));
   }, [preferences]);
+
+  useEffect(() => {
+    if (preferences.languageManual) return;
+    if (!isSenegaleseUser(profile)) return;
+    if (preferences.language === "wo") return;
+
+    setPreferences((prev) => ({ ...prev, language: "wo" }));
+  }, [profile.country, profile.phone, preferences.languageManual]);
 
   const unreadCount = useMemo(
     () => data.notifications.filter((n) => !n.read).length,

@@ -25,6 +25,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useAppData } from "@/context/AppDataContext";
 import { useToast } from "@/context/ToastContext";
 import { useTranslation } from "@/context/I18nContext";
+import { isSenegaleseUser, localeOrderForUser } from "@/lib/i18n";
 import type { Locale } from "@/lib/i18n/types";
 import { translateAccountType } from "@/lib/i18n/helpers";
 import {
@@ -119,12 +120,12 @@ export function Settings() {
 
   const languages = useMemo(
     () =>
-      (["fr", "en", "wo"] as const).map((code) => ({
+      localeOrderForUser(profile).map((code) => ({
         code,
         label: t(`settings.languages.${code}`),
         flag: languageFlags[code],
       })),
-    [t],
+    [t, profile],
   );
 
   const themeOptions = useMemo(
@@ -378,6 +379,11 @@ export function Settings() {
                 <p className="mt-1 text-sm text-muted">
                   {t("settings.languageDesc")}
                 </p>
+                {isSenegaleseUser(profile) && (
+                  <p className="mt-2 text-sm text-primary">
+                    {t("settings.languageSenegalHint")}
+                  </p>
+                )}
               </div>
               <div className="grid gap-3 sm:grid-cols-3">
                 {languages.map((lang) => (

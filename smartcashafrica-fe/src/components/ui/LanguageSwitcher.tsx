@@ -1,7 +1,9 @@
 import { Globe, Check } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import { useAppData } from "@/context/AppDataContext";
 import { useTranslation } from "@/context/I18nContext";
-import { LOCALE_CONFIG, LOCALE_ORDER } from "@/lib/i18n/locales";
+import { localeOrderForUser } from "@/lib/i18n";
+import { LOCALE_CONFIG } from "@/lib/i18n/locales";
 import { cn } from "@/lib/utils";
 
 interface LanguageSwitcherProps {
@@ -13,7 +15,9 @@ export function LanguageSwitcher({
   variant = "default",
   className,
 }: LanguageSwitcherProps) {
+  const { profile } = useAppData();
   const { locale, setLocale, t } = useTranslation();
+  const localeOrder = localeOrderForUser(profile);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const current = LOCALE_CONFIG[locale];
@@ -63,7 +67,7 @@ export function LanguageSwitcher({
             "animate-fade-in",
           )}
         >
-          {LOCALE_ORDER.map((code) => {
+          {localeOrder.map((code) => {
             const config = LOCALE_CONFIG[code];
             const isActive = locale === code;
             return (

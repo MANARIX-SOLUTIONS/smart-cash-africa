@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowRight,
@@ -15,7 +15,10 @@ import { useAppData } from "@/context/AppDataContext";
 import { useTranslation } from "@/context/I18nContext";
 import { useToast } from "@/context/ToastContext";
 import { onboardingProviders } from "@/lib/providers";
+import { localeOrderForUser } from "@/lib/i18n";
+import { LOCALE_CONFIG } from "@/lib/i18n/locales";
 import { translateAccountType } from "@/lib/i18n/helpers";
+import type { Locale } from "@/lib/i18n/types";
 import { cn } from "@/lib/utils";
 
 const stepKeys = [
@@ -28,9 +31,10 @@ const stepKeys = [
 export function Onboarding() {
   const navigate = useNavigate();
   const { user, completeOnboarding } = useAuth();
-  const { connectAccount } = useAppData();
+  const { connectAccount, profile } = useAppData();
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t, locale, setLocale } = useTranslation();
+  const localeOrder = useMemo(() => localeOrderForUser(profile), [profile]);
   const [step, setStep] = useState(0);
   const [selectedProviders, setSelectedProviders] = useState<string[]>([]);
   const [monthlyIncome, setMonthlyIncome] = useState("");
@@ -103,6 +107,39 @@ export function Onboarding() {
               {t("onboarding.welcomeTitle", { name: firstName })}
             </h1>
             <p className="mt-3 text-muted">{t("onboarding.welcomeSubtitle")}</p>
+
+            <div className="mt-8 text-left">
+              <p className="text-sm font-medium text-navy">
+                {t("onboarding.languageTitle")}
+              </p>
+              <p className="mt-1 text-sm text-muted">
+                {t("onboarding.languageSubtitle")}
+              </p>
+              <div className="mt-4 flex flex-wrap justify-center gap-2">
+                {localeOrder.map((code) => {
+                  const config = LOCALE_CONFIG[code];
+                  const active = locale === code;
+                  return (
+                    <button
+                      key={code}
+                      type="button"
+                      onClick={() => setLocale(code as Locale)}
+                      className={cn(
+                        "flex items-center gap-2 rounded-xl border px-4 py-2.5",
+                        "text-sm font-medium transition-all",
+                        active
+                          ? "border-primary bg-primary-light text-primary"
+                          : "border-border text-muted hover:border-primary/30",
+                      )}
+                    >
+                      <span className="text-lg">{config.flag}</span>
+                      {config.nativeName}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <Button className="mt-10" size="lg" onClick={next}>
               {t("onboarding.getStarted")}
               <ArrowRight className="h-4 w-4" />

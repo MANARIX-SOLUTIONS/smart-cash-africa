@@ -174,6 +174,9 @@ export const fr: Messages = {
     welcomeTitle: 'Bienvenue, {name} !',
     welcomeSubtitle:
       'Configurons votre hub financier en moins de 2 minutes. Nous vous aidons à connecter vos comptes, définir des objectifs et obtenir des insights IA.',
+    languageTitle: 'Choisissez votre langue',
+    languageSubtitle:
+      'Le wolof est recommandé pour les utilisateurs au Sénégal. Modifiable à tout moment.',
     getStarted: 'Commencer',
     connectTitle: 'Connectez vos comptes',
     connectSubtitle:
@@ -701,6 +704,8 @@ export const fr: Messages = {
       'Choisissez l’apparence de SmartCash. Système suit la préférence de votre appareil.',
     languageDesc:
       'SmartCash est disponible en français, anglais et wolof. Dates et montants suivent votre locale.',
+    languageSenegalHint:
+      'Le wolof est sélectionné par défaut pour les utilisateurs au Sénégal. Choisissez une autre langue si vous préférez.',
     subscription: 'Abonnement',
     privacy: 'Confidentialité',
     privacySub: 'Contrôlez vos données et préférences de confidentialité',
