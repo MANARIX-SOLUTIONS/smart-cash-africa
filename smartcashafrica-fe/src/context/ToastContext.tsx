@@ -27,7 +27,7 @@ const styles = {
     "border-success/30 bg-green-50 text-green-800 dark:bg-green-950 dark:text-green-200",
   error:
     "border-error/30 bg-red-50 text-red-800 dark:bg-red-950 dark:text-red-200",
-  info: "border-accent/30 bg-accent-light text-blue-800 dark:bg-blue-950 dark:text-blue-200",
+  info: "border-accent/30 bg-accent-light text-blue-800 dark:text-blue-200",
 };
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {

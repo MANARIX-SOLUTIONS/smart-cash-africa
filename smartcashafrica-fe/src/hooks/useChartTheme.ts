@@ -6,16 +6,16 @@ export function useChartTheme() {
 
   return {
     isDark,
-    grid: isDark ? '#334155' : '#E2E8F0',
-    tick: isDark ? '#94A3B8' : '#64748B',
+    grid: isDark ? '#2a3a52' : '#e2e8f0',
+    tick: isDark ? '#8b9cb3' : '#64748b',
     tooltip: {
       borderRadius: '12px',
-      border: `1px solid ${isDark ? '#334155' : '#E2E8F0'}`,
-      backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
-      color: isDark ? '#F1F5F9' : '#0F172A',
+      border: `1px solid ${isDark ? '#2a3a52' : '#e2e8f0'}`,
+      backgroundColor: isDark ? '#121a27' : '#ffffff',
+      color: isDark ? '#e8edf4' : '#0f172a',
       boxShadow: isDark
-        ? '0 4px 12px rgba(0,0,0,0.3)'
-        : '0 4px 12px rgba(0,0,0,0.06)',
+        ? '0 8px 24px rgba(0,0,0,0.45)'
+        : '0 4px 12px rgba(15,23,42,0.08)',
     },
   };
 }

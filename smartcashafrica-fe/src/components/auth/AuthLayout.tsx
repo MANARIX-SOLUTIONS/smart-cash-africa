@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Shield, TrendingUp, Bot } from "lucide-react";
 import { useTranslation } from "@/context/I18nContext";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
+import { mobileMoneyProviders } from "@/lib/providers";
 import { lpLinks } from "@/lib/links";
 
 interface AuthLayoutProps {
@@ -50,11 +51,14 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
 
   return (
     <div className="flex min-h-screen">
-      <div className="relative hidden overflow-hidden lg:flex lg:w-1/2 lg:flex-col lg:justify-between bg-[#0F172A] p-12 text-white">
+      <div className="relative hidden overflow-hidden lg:flex lg:w-1/2 lg:flex-col lg:justify-between bg-brand p-12 text-white">
         <div className="pointer-events-none absolute -left-20 top-20 h-72 w-72 rounded-full bg-primary/20 blur-3xl" />
         <div className="pointer-events-none absolute -right-10 bottom-20 h-64 w-64 rounded-full bg-accent/15 blur-3xl" />
 
-        <BrandLogo className="text-white" />
+        <div className="relative flex items-center justify-between">
+          <BrandLogo className="text-white" />
+          <LanguageSwitcher variant="compact" className="text-white" />
+        </div>
 
         <div className="relative">
           <h2 className="text-4xl font-bold leading-tight">
@@ -79,6 +83,28 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
               </div>
             ))}
           </div>
+
+          <div className="mt-10">
+            <p className="text-xs font-semibold uppercase tracking-wider text-white/50">
+              {t("auth.supportedProviders")}
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {mobileMoneyProviders.map((p) => (
+                <div
+                  key={p.id}
+                  className="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-1.5"
+                >
+                  <div
+                    className="flex h-6 w-6 items-center justify-center rounded-md text-[10px] font-bold text-white"
+                    style={{ backgroundColor: p.color }}
+                  >
+                    {p.initials}
+                  </div>
+                  <span className="text-xs text-white/80">{p.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         <p className="relative text-xs text-white/40">{t("auth.rights")}</p>
@@ -93,10 +119,11 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
             <LanguageSwitcher variant="compact" />
           </div>
 
-          <h1 className="text-3xl font-bold text-navy">{title}</h1>
-          <p className="mt-2 text-muted">{subtitle}</p>
-
-          <div className="mt-8">{children}</div>
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-card sm:p-8">
+            <h1 className="text-3xl font-bold text-navy">{title}</h1>
+            <p className="mt-2 text-muted">{subtitle}</p>
+            <div className="mt-8">{children}</div>
+          </div>
         </div>
       </div>
     </div>

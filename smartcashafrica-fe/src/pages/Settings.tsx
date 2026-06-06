@@ -13,10 +13,12 @@ import {
   Monitor,
   Check,
   LogOut,
+  ShieldCheck,
 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Toggle } from "@/components/ui/Toggle";
+import { ThemePreview } from "@/components/ui/ThemePreview";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
 import { useAppData } from "@/context/AppDataContext";
@@ -34,6 +36,7 @@ const sectionIds = [
   "language",
   "theme",
   "subscription",
+  "privacy",
 ] as const;
 
 const sectionIcons = {
@@ -44,6 +47,7 @@ const sectionIcons = {
   language: Globe,
   theme: Palette,
   subscription: CreditCard,
+  privacy: ShieldCheck,
 } as const;
 
 const languageFlags: Record<Locale, string> = {
@@ -397,25 +401,38 @@ export function Settings() {
 
           {active === "theme" && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-semibold text-navy">
-                {t("settings.theme")}
-              </h2>
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div>
+                <h2 className="text-2xl font-semibold text-navy">
+                  {t("settings.theme")}
+                </h2>
+                <p className="mt-1 text-sm text-muted">
+                  {t("settings.themeDesc")}
+                </p>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-3">
                 {themeOptions.map(({ id, label, icon: Icon }) => (
                   <button
                     key={id}
                     type="button"
                     onClick={() => setTheme(id)}
                     className={cn(
-                      "flex flex-col items-center gap-3 rounded-xl border p-6",
+                      "flex flex-col gap-4 rounded-xl border p-4 text-left",
                       "transition-all",
                       theme === id
-                        ? "border-primary bg-primary-light"
-                        : "border-border hover:border-primary/30",
+                        ? "border-primary bg-primary-light ring-2 ring-ring"
+                        : "border-border hover:border-primary/30 hover:bg-surface/50",
                     )}
                   >
-                    <Icon className="h-8 w-8 text-navy" />
-                    <span className="font-medium text-navy">{label}</span>
+                    <ThemePreview mode={id} />
+                    <div className="flex items-center gap-2">
+                      <Icon
+                        className={cn(
+                          "h-5 w-5",
+                          theme === id ? "text-primary" : "text-muted",
+                        )}
+                      />
+                      <span className="font-medium text-navy">{label}</span>
+                    </div>
                   </button>
                 ))}
               </div>
@@ -448,6 +465,51 @@ export function Settings() {
               >
                 {t("settings.subscriptionManage")}
               </Button>
+            </div>
+          )}
+
+          {active === "privacy" && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-semibold text-navy">
+                {t("settings.privacy")}
+              </h2>
+              <p className="text-sm text-muted">{t("settings.privacySub")}</p>
+              <div className="space-y-3">
+                {(
+                  ["exportData", "privacyPolicy", "deleteAccount"] as const
+                ).map((key) => (
+                  <div
+                    key={key}
+                    className="flex items-center justify-between rounded-xl border border-border p-4"
+                  >
+                    <div>
+                      <p className="text-sm font-medium text-navy">
+                        {t(`settings.privacyItems.${key}`)}
+                      </p>
+                      <p className="text-xs text-muted">
+                        {t(`settings.privacyItems.${key}Desc`)}
+                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        if (key === "privacyPolicy") {
+                          navigate("/privacy");
+                          return;
+                        }
+                        toast(t(`settings.privacyItems.${key}Toast`), "info");
+                      }}
+                    >
+                      {t(
+                        key === "privacyPolicy"
+                          ? "common.view"
+                          : "common.configure",
+                      )}
+                    </Button>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </Card>

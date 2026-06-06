@@ -1,15 +1,27 @@
 import { TrendingUp, CheckCircle2 } from "lucide-react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import { Card } from "@/components/ui/Card";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { useTranslation } from "@/context/I18nContext";
+import { useChartTheme } from "@/hooks/useChartTheme";
 import {
   translateHealthCategory,
   translateHealthRecommendation,
+  translateMonth,
 } from "@/lib/i18n/helpers";
-import { healthScores } from "@/lib/mock-data";
+import { healthScores, healthHistory } from "@/lib/mock-data";
 
 export function FinancialHealth() {
   const { t } = useTranslation();
+  const chart = useChartTheme();
   const scoreColor =
     healthScores.overall >= 80
       ? "#22C55E"
@@ -71,7 +83,7 @@ export function FinancialHealth() {
 
         <Card className="lg:col-span-2">
           <h3 className="text-2xl font-semibold text-navy">
-            {t("health.overall")}
+            {t("health.scoreBreakdown")}
           </h3>
           <div className="mt-6 space-y-5">
             {healthScores.categories.map((cat) => (
@@ -83,7 +95,7 @@ export function FinancialHealth() {
                   <div className="flex items-center gap-3 text-sm">
                     <span className="font-bold text-navy">{cat.score}</span>
                     <span className="text-muted">
-                      {t("health.regionalAvg", { value: cat.benchmark })}
+                      {t("health.benchmark", { value: cat.benchmark })}
                     </span>
                   </div>
                 </div>
@@ -96,6 +108,45 @@ export function FinancialHealth() {
           </div>
         </Card>
       </div>
+
+      <Card>
+        <h3 className="text-2xl font-semibold text-navy">
+          {t("health.historicalEvolution")}
+        </h3>
+        <p className="mt-1 text-sm text-muted">
+          {t("health.historicalEvolutionSub")}
+        </p>
+        <ResponsiveContainer width="100%" height={280} className="mt-6">
+          <LineChart data={healthHistory}>
+            <CartesianGrid
+              strokeDasharray="3 3"
+              vertical={false}
+              stroke={chart.grid}
+            />
+            <XAxis
+              dataKey="month"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: chart.tick, fontSize: 12 }}
+              tickFormatter={(m) => translateMonth(t, m)}
+            />
+            <YAxis
+              domain={[60, 100]}
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: chart.tick, fontSize: 12 }}
+            />
+            <Tooltip contentStyle={chart.tooltip} />
+            <Line
+              type="monotone"
+              dataKey="score"
+              stroke="#00A86B"
+              strokeWidth={3}
+              dot={{ fill: "#00A86B", r: 4 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </Card>
 
       <Card>
         <h3 className="text-2xl font-semibold text-navy">

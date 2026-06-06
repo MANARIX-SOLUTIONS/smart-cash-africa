@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { to: "/dashboard", labelKey: "nav.dashboard", icon: LayoutDashboard },
-  { to: "/accounts", labelKey: "nav.accounts", icon: Wallet },
+  { to: "/accounts", labelKey: "nav.myAccounts", icon: Wallet },
   { to: "/transactions", labelKey: "nav.transactions", icon: ArrowLeftRight },
   { to: "/budgets", labelKey: "nav.budgets", icon: PieChart },
   { to: "/savings", labelKey: "nav.savings", icon: Target },
@@ -52,7 +52,7 @@ export function Sidebar({
     <>
       {mobileOpen && (
         <button
-          className="fixed inset-0 z-40 bg-navy/40 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-overlay backdrop-blur-sm lg:hidden"
           onClick={onMobileClose}
           aria-label={t("common.closeNav")}
         />
@@ -81,9 +81,7 @@ export function Sidebar({
               <p className="truncate text-sm font-semibold text-navy">
                 {t("brand.short")}
               </p>
-              <p className="truncate text-xs text-muted">
-                {t("brand.region")}
-              </p>
+              <p className="truncate text-xs text-muted">{t("brand.region")}</p>
             </div>
           )}
           <button
@@ -133,9 +131,7 @@ export function Sidebar({
             "transition-colors hover:bg-surface hover:text-navy",
           )}
           aria-label={
-            collapsed
-              ? t("common.expandSidebar")
-              : t("common.collapseSidebar")
+            collapsed ? t("common.expandSidebar") : t("common.collapseSidebar")
           }
         >
           {collapsed ? (

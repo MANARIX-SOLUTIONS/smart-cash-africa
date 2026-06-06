@@ -78,7 +78,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
   return (
     <div className="fixed inset-0 z-[60] flex items-start justify-center pt-[15vh] px-4">
       <button
-        className="absolute inset-0 bg-navy/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-overlay backdrop-blur-sm"
         onClick={onClose}
         aria-label={t("common.close")}
       />
@@ -160,7 +160,9 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
             )}
 
           {!query && (
-            <p className="px-4 py-3 text-xs text-muted">{t("common.cmdHint")}</p>
+            <p className="px-4 py-3 text-xs text-muted">
+              {t("common.cmdHint")}
+            </p>
           )}
         </div>
       </div>

@@ -44,7 +44,10 @@ export function Login() {
     >
       <form onSubmit={handleSubmit} className="space-y-5">
         {error && (
-          <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-error dark:bg-red-950">
+          <p
+            role="alert"
+            className="select-text rounded-xl bg-red-50 px-4 py-3 text-sm text-error dark:bg-red-950"
+          >
             {error}
           </p>
         )}
@@ -106,7 +109,9 @@ export function Login() {
           <div className="w-full border-t border-border" />
         </div>
         <div className="relative flex justify-center text-xs">
-          <span className="bg-background px-3 text-muted">{t("common.or")}</span>
+          <span className="bg-background px-3 text-muted">
+            {t("common.or")}
+          </span>
         </div>
       </div>
 

@@ -7,6 +7,7 @@ import {
   MoreHorizontal,
   Plus,
   Loader2,
+  ArrowLeftRight,
 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -68,7 +69,7 @@ export function Accounts() {
             <Link to="/accounts/connect">
               <Button>
                 <Plus className="h-4 w-4" />
-                {t("common.connect")}
+                {t("accounts.addAccount")}
               </Button>
             </Link>
           </div>
@@ -76,11 +77,17 @@ export function Accounts() {
       />
 
       {accounts.length === 0 ? (
-        <Card className="text-center py-12">
+        <Card className="py-12 text-center">
           <p className="text-muted">{t("accounts.empty")}</p>
-          <Link to="/accounts/connect" className="mt-4 inline-block">
-            <Button>{t("accounts.connectFirst")}</Button>
-          </Link>
+          <p className="mt-2 text-sm text-muted">{t("accounts.emptyHint")}</p>
+          <div className="mt-4 flex flex-wrap justify-center gap-3">
+            <Link to="/accounts/connect">
+              <Button>{t("accounts.connectFirst")}</Button>
+            </Link>
+            <Link to="/accounts/connect?mode=create">
+              <Button variant="outline">{t("accounts.createFirst")}</Button>
+            </Link>
+          </div>
         </Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -89,14 +96,14 @@ export function Accounts() {
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <div
-                    className="flex h-12 w-12 items-center justify-center rounded-xl text-sm font-bold text-white"
+                    className="flex h-12 w-12 items-center justify-center rounded-xl text-sm font-bold text-white shadow-sm"
                     style={{ backgroundColor: account.color }}
                   >
                     {account.initials}
                   </div>
                   <div>
                     <p className="font-semibold text-navy">
-                      {account.provider}
+                      {account.nickname ?? account.provider}
                     </p>
                     <p className="text-sm text-muted">
                       {translateAccountType(t, account.type)}
@@ -121,17 +128,17 @@ export function Accounts() {
                 {translateAccountActivity(t, account)}
               </p>
 
-              <div className="mt-4 flex gap-2 border-t border-border pt-4">
-                <Link to={`/accounts/${account.id}`} className="flex-1">
+              <div className="mt-4 grid grid-cols-2 gap-2 border-t border-border pt-4">
+                <Link to={`/accounts/${account.id}`}>
                   <Button variant="ghost" size="sm" className="w-full">
                     <Eye className="h-4 w-4" />
-                    {t("common.details")}
+                    {t("accounts.viewTransactions")}
                   </Button>
                 </Link>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="flex-1"
+                  className="w-full"
                   disabled={syncingId === account.id}
                   onClick={() => handleSync(account.id)}
                 >
@@ -145,12 +152,18 @@ export function Accounts() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="flex-1"
+                  className="w-full"
                   onClick={() => setRenameId(account.id)}
                 >
                   <Pencil className="h-4 w-4" />
                   {t("common.rename")}
                 </Button>
+                <Link to="/accounts/connect">
+                  <Button variant="ghost" size="sm" className="w-full">
+                    <ArrowLeftRight className="h-4 w-4" />
+                    {t("common.edit")}
+                  </Button>
+                </Link>
               </div>
             </Card>
           ))}
@@ -159,7 +172,7 @@ export function Accounts() {
 
       <RenameAccountDialog
         open={renameId !== null}
-        currentName={renameTarget?.provider ?? ""}
+        currentName={renameTarget?.nickname ?? renameTarget?.provider ?? ""}
         onClose={() => setRenameId(null)}
         onSave={(name) => {
           if (renameId) {

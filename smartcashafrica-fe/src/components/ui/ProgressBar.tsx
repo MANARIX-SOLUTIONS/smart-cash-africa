@@ -19,7 +19,7 @@ export function ProgressBar({
 
   return (
     <div className={cn("w-full", className)}>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
+      <div className="h-2 w-full overflow-hidden rounded-full bg-surface">
         <div
           className="h-full rounded-full transition-all duration-700 ease-out"
           style={{

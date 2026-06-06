@@ -24,6 +24,13 @@ export interface Account {
   activityParams?: Record<string, string | number>;
 }
 
+export interface Budget {
+  id: string;
+  category: string;
+  allocated: number;
+  color: string;
+}
+
 export interface SavingsGoal {
   id: string;
   name: string;
@@ -68,4 +75,19 @@ export interface ConnectProviderInput {
   initials: string;
   type: string;
   nickname?: string;
+  initialBalance?: number;
 }
+
+export interface CreateAccountInput {
+  name: string;
+  type: AccountType;
+  initialBalance?: number;
+  phone?: string;
+}
+
+export type AccountType =
+  | 'Mobile Money'
+  | 'Savings Account'
+  | 'Current Account'
+  | 'Physical Cash'
+  | 'Savings';

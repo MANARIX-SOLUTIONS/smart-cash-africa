@@ -3,8 +3,10 @@ const CATEGORY_KEYS: Record<string, string> = {
   Transport: 'transactions.categories.transport',
   Housing: 'transactions.categories.housing',
   Utilities: 'transactions.categories.utilities',
+  Bills: 'transactions.categories.bills',
   Shopping: 'transactions.categories.shopping',
   Health: 'transactions.categories.health',
+  Education: 'transactions.categories.education',
   Entertainment: 'transactions.categories.entertainment',
   Income: 'transactions.categories.income',
   Salary: 'transactions.categories.salary',
@@ -26,7 +28,10 @@ const REPORT_KEYS: Record<string, { name: string; desc: string }> = {
     name: 'reports.monthlySummary',
     desc: 'reports.monthlySummaryDesc',
   },
-  '2': { name: 'reports.annualSummary', desc: 'reports.annualSummaryDesc' },
+  '2': {
+    name: 'reports.spendingAnalysis',
+    desc: 'reports.spendingAnalysisDesc',
+  },
   '3': { name: 'reports.budgetReport', desc: 'reports.budgetReportDesc' },
   '4': { name: 'reports.savingsReport', desc: 'reports.savingsReportDesc' },
   '5': {
@@ -36,15 +41,20 @@ const REPORT_KEYS: Record<string, { name: string; desc: string }> = {
 };
 
 const HEALTH_CATEGORY_KEYS: Record<string, string> = {
+  'Budget Discipline': 'health.budgetDiscipline',
+  'Savings Rate': 'health.savingsRateScore',
+  'Income Stability': 'health.incomeStability',
+  'Emergency Fund': 'health.emergencyFund',
+  'Goal Progress': 'health.goalProgress',
   'Savings Score': 'health.savingsScore',
   'Spending Discipline': 'health.spendingDiscipline',
   'Budget Adherence': 'health.budgetAdherence',
-  'Emergency Fund': 'health.emergencyFund',
   'Debt Management': 'health.debtManagement',
 };
 
 const CASH_DIST_KEYS: Record<string, string> = {
   'Bank Accounts': 'dashboard.bankAccounts',
+  'Mobile Money': 'dashboard.mobileMoney',
   Savings: 'dashboard.savings',
   Cash: 'dashboard.cash',
 };
@@ -54,6 +64,7 @@ const SUMMARY_CARD_KEYS: Record<string, string> = {
   income: 'dashboard.monthlyIncome',
   expenses: 'dashboard.monthlyExpenses',
   'savings-rate': 'dashboard.savingsRate',
+  'health-score': 'dashboard.healthScore',
 };
 
 const MONTH_KEYS: Record<string, string> = {
@@ -77,15 +88,17 @@ const SEED_ACCOUNT_ACTIVITY: Record<
   string,
   { key: string; params?: Record<string, string | number> }
 > = {
-  '1': { key: 'accounts.activity.transferReceived', params: { hours: 2 } },
-  '2': {
+  '1': {
     key: 'accounts.activity.paymentTo',
     params: { merchant: 'Shoprite', hours: 5 },
   },
-  '3': { key: 'accounts.activity.airtime', params: { days: 1 } },
-  '4': { key: 'accounts.activity.salaryDeposit', params: { days: 3 } },
-  '5': { key: 'accounts.activity.manualEntry', params: { weeks: 1 } },
-  '6': { key: 'accounts.activity.autoSave', params: { days: 2 } },
+  '2': { key: 'accounts.activity.airtime', params: { days: 1 } },
+  '3': { key: 'accounts.activity.transferReceived', params: { hours: 3 } },
+  '4': { key: 'accounts.activity.paymentTo', params: { merchant: 'SONABEL', hours: 6 } },
+  '5': { key: 'accounts.activity.transferReceived', params: { hours: 2 } },
+  '6': { key: 'accounts.activity.salaryDeposit', params: { days: 3 } },
+  '7': { key: 'accounts.activity.transferReceived', params: { hours: 24 } },
+  '8': { key: 'accounts.activity.manualEntry', params: { weeks: 1 } },
 };
 
 const NOTIFICATION_TIME_BY_ID: Record<

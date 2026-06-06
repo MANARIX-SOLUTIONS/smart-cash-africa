@@ -1,13 +1,26 @@
+import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { Download, Printer, Share2 } from "lucide-react";
+import {
+  BarChart,
+  Bar,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { BackLink } from "@/components/ui/BackLink";
 import { useToast } from "@/context/ToastContext";
 import { useAppData } from "@/context/AppDataContext";
 import { useTranslation } from "@/context/I18nContext";
+import { useChartTheme } from "@/hooks/useChartTheme";
 import { downloadReportFile } from "@/lib/export";
 import { getReportById } from "@/lib/data-helpers";
+import { enrichBudget } from "@/lib/budget-helpers";
 import {
   translateCategory,
   translateHealthCategory,
@@ -15,7 +28,7 @@ import {
   translateReport,
   translateSummaryCard,
 } from "@/lib/i18n/helpers";
-import { summaryCards, budgets, healthScores } from "@/lib/mock-data";
+import { summaryCards, categorySpending, healthScores } from "@/lib/mock-data";
 import { formatCurrency } from "@/lib/utils";
 import { NotFound } from "@/pages/NotFound";
 
@@ -23,8 +36,14 @@ export function ReportDetail() {
   const { id } = useParams();
   const report = id ? getReportById(id) : undefined;
   const { toast } = useToast();
-  const { savingsGoals } = useAppData();
+  const { savingsGoals, budgets, transactions } = useAppData();
   const { t, intlLocale } = useTranslation();
+  const chart = useChartTheme();
+
+  const enrichedBudgets = useMemo(
+    () => budgets.map((b) => enrichBudget(b, transactions)),
+    [budgets, transactions],
+  );
 
   if (!report) return <NotFound />;
 
@@ -56,6 +75,12 @@ export function ReportDetail() {
       toast(t("reports.copied"), "success");
     }
   };
+
+  const spendingChartData = categorySpending.map((c) => ({
+    name: translateCategory(t, c.category),
+    amount: c.amount,
+    fill: c.color,
+  }));
 
   return (
     <div className="mx-auto max-w-4xl space-y-8 animate-fade-in">
@@ -126,12 +151,68 @@ export function ReportDetail() {
           </div>
         )}
 
+        {report.type === "spending" && (
+          <div className="mt-6 space-y-6">
+            <h2 className="text-xl font-semibold text-navy">
+              {t("reports.spendingBreakdown")}
+            </h2>
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={spendingChartData} barSize={32}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  stroke={chart.grid}
+                />
+                <XAxis
+                  dataKey="name"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: chart.tick, fontSize: 11 }}
+                />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: chart.tick, fontSize: 12 }}
+                  tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
+                />
+                <Tooltip
+                  formatter={(value: number) =>
+                    formatCurrency(value, "FCFA", intlLocale)
+                  }
+                  contentStyle={chart.tooltip}
+                />
+                <Bar dataKey="amount" radius={[6, 6, 0, 0]}>
+                  {spendingChartData.map((entry) => (
+                    <Cell key={entry.name} fill={entry.fill} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+            <div className="space-y-3">
+              {categorySpending.map((cat) => (
+                <div
+                  key={cat.category}
+                  className="flex items-center justify-between rounded-xl border border-border p-4"
+                >
+                  <span className="font-medium text-navy">
+                    {translateCategory(t, cat.category)}
+                  </span>
+                  <span className="font-semibold text-navy">
+                    {formatCurrency(cat.amount, "FCFA", intlLocale)}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <p className="text-sm text-muted">{t("reports.spendingInsight")}</p>
+          </div>
+        )}
+
         {report.type === "budget" && (
           <div className="mt-6 space-y-4">
             <h2 className="text-xl font-semibold text-navy">
               {t("reports.budgetVsActual")}
             </h2>
-            {budgets.map((b) => (
+            {enrichedBudgets.map((b) => (
               <div
                 key={b.id}
                 className="flex items-center justify-between rounded-xl border border-border p-4"
@@ -202,31 +283,6 @@ export function ReportDetail() {
                   </li>
                 ))}
               </ul>
-            </div>
-          </div>
-        )}
-
-        {report.type === "annual" && (
-          <div className="mt-6 space-y-4">
-            <h2 className="text-xl font-semibold text-navy">
-              {t("reports.yearToDate")}
-            </h2>
-            <div className="grid gap-4 sm:grid-cols-3">
-              {[
-                { label: t("reports.totalIncome"), value: 7_500_000 },
-                { label: t("reports.totalExpenses"), value: 5_352_000 },
-                { label: t("reports.netSavings"), value: 2_148_000 },
-              ].map((s) => (
-                <div
-                  key={s.label}
-                  className="rounded-xl border border-border p-4"
-                >
-                  <p className="text-sm text-muted">{s.label}</p>
-                  <p className="mt-1 text-lg font-bold text-navy">
-                    {formatCurrency(s.value, "FCFA", intlLocale)}
-                  </p>
-                </div>
-              ))}
             </div>
           </div>
         )}

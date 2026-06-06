@@ -1,12 +1,16 @@
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Wallet,
   TrendingUp,
   TrendingDown,
   PiggyBank,
+  HeartPulse,
   Sparkles,
   ArrowRight,
   Calendar,
+  Search,
+  CheckCircle2,
 } from "lucide-react";
 import {
   PieChart,
@@ -30,7 +34,7 @@ import {
   cashDistribution,
   monthlySpending,
   categorySpending,
-  aiInsight,
+  aiInsights,
 } from "@/lib/mock-data";
 import { useAuth } from "@/context/AuthContext";
 import { useAppData } from "@/context/AppDataContext";
@@ -49,13 +53,20 @@ const iconMap = {
   "trending-up": TrendingUp,
   "trending-down": TrendingDown,
   "piggy-bank": PiggyBank,
+  "heart-pulse": HeartPulse,
 };
+
+const priorityVariant = {
+  high: "error",
+  medium: "warning",
+  low: "success",
+} as const;
 
 export function Dashboard() {
   const { user } = useAuth();
   const { transactions } = useAppData();
   const { t, greeting, intlLocale } = useTranslation();
-  const recentTxns = transactions.slice(0, 5);
+  const [txnSearch, setTxnSearch] = useState("");
   const chart = useChartTheme();
   const firstName = user?.name.split(" ")[0] ?? "there";
   const today = new Date().toLocaleDateString(intlLocale, {
@@ -63,6 +74,19 @@ export function Dashboard() {
     day: "numeric",
     month: "long",
   });
+
+  const recentTxns = useMemo(() => {
+    const query = txnSearch.toLowerCase();
+    return transactions
+      .filter(
+        (tx) =>
+          !query ||
+          tx.description.toLowerCase().includes(query) ||
+          tx.category.toLowerCase().includes(query) ||
+          tx.account.toLowerCase().includes(query),
+      )
+      .slice(0, 5);
+  }, [transactions, txnSearch]);
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -77,7 +101,12 @@ export function Dashboard() {
             <h1 className="mt-2 text-3xl font-bold tracking-tight text-navy sm:text-[40px]">
               {greeting()}, {firstName}
             </h1>
-            <p className="mt-1 text-base text-muted">{t("dashboard.overview")}</p>
+            <div className="mt-2 flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-success" />
+              <p className="text-base text-navy">
+                {t("dashboard.healthStatus")}
+              </p>
+            </div>
           </div>
           <Link to="/advisor">
             <Button variant="outline" size="sm">
@@ -88,10 +117,11 @@ export function Dashboard() {
         </div>
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         {summaryCards.map((card) => {
           const Icon = iconMap[card.icon as keyof typeof iconMap];
-          const isPositive = card.trend >= 0;
+          const isPositive =
+            card.id === "expenses" ? card.trend <= 0 : card.trend >= 0;
 
           return (
             <Card key={card.id} hover className="animate-count-up">
@@ -101,7 +131,9 @@ export function Dashboard() {
                     "flex h-10 w-10 items-center justify-center rounded-xl",
                     card.id === "expenses"
                       ? "bg-red-50 text-error dark:bg-red-950"
-                      : "bg-primary-light text-primary",
+                      : card.id === "health-score"
+                        ? "bg-accent-light text-accent"
+                        : "bg-primary-light text-primary",
                   )}
                 >
                   <Icon className="h-5 w-5" />
@@ -116,7 +148,8 @@ export function Dashboard() {
               <p className="mt-1 text-2xl font-bold text-navy">
                 {card.isPercent ? (
                   <>
-                    <AnimatedNumber value={card.value} />%
+                    <AnimatedNumber value={card.value} />
+                    {card.id === "health-score" ? "/100" : "%"}
                   </>
                 ) : (
                   <>
@@ -146,10 +179,10 @@ export function Dashboard() {
       <section className="grid gap-6 lg:grid-cols-2">
         <Card>
           <h3 className="text-2xl font-semibold text-navy">
-            {t("dashboard.cashDistribution")}
+            {t("dashboard.assetsDistribution")}
           </h3>
           <p className="mt-1 text-sm text-muted">
-            {t("dashboard.cashDistributionSub")}
+            {t("dashboard.assetsDistributionSub")}
           </p>
           <div className="mt-6 flex flex-col items-center gap-6 sm:flex-row">
             <ResponsiveContainer width="100%" height={220}>
@@ -235,7 +268,7 @@ export function Dashboard() {
 
       <section className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h3 className="text-2xl font-semibold text-navy">
                 {t("dashboard.recentTransactions")}
@@ -251,48 +284,68 @@ export function Dashboard() {
               {t("common.viewAll")}
             </Link>
           </div>
+          <div className="relative mt-4">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+            <input
+              type="search"
+              value={txnSearch}
+              onChange={(e) => setTxnSearch(e.target.value)}
+              placeholder={t("transactions.search")}
+              className={[
+                "h-10 w-full rounded-xl border border-border bg-surface",
+                "pl-10 pr-4 text-sm outline-none",
+                "focus:border-primary focus:ring-2 focus:ring-primary/20",
+              ].join(" ")}
+            />
+          </div>
           <div className="mt-4 divide-y divide-border">
-            {recentTxns.map((tx) => (
-              <Link
-                key={tx.id}
-                to={`/transactions/${tx.id}`}
-                className="flex items-center justify-between py-3 first:pt-0 transition-colors hover:bg-surface/50 -mx-2 px-2 rounded-lg"
-              >
-                <div className="flex items-center gap-3">
-                  <div
+            {recentTxns.length === 0 ? (
+              <p className="py-8 text-center text-sm text-muted">
+                {t("transactions.empty")}
+              </p>
+            ) : (
+              recentTxns.map((tx) => (
+                <Link
+                  key={tx.id}
+                  to={`/transactions/${tx.id}`}
+                  className="flex items-center justify-between py-3 first:pt-0 transition-colors hover:bg-surface/50 -mx-2 px-2 rounded-lg"
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={cn(
+                        "flex h-10 w-10 items-center justify-center rounded-xl text-xs font-bold",
+                        tx.amount >= 0
+                          ? "bg-green-50 text-success dark:bg-green-950"
+                          : "bg-surface text-muted",
+                      )}
+                    >
+                      {tx.category.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-navy">
+                        {tx.description}
+                      </p>
+                      <p className="text-xs text-muted">
+                        {tx.account} · {translateCategory(t, tx.category)}
+                      </p>
+                    </div>
+                  </div>
+                  <span
                     className={cn(
-                      "flex h-10 w-10 items-center justify-center rounded-xl text-xs font-bold",
-                      tx.amount >= 0
-                        ? "bg-green-50 text-success dark:bg-green-950"
-                        : "bg-surface text-muted",
+                      "text-sm font-semibold",
+                      tx.amount >= 0 ? "text-success" : "text-navy",
                     )}
                   >
-                    {tx.category.slice(0, 2).toUpperCase()}
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-navy">
-                      {tx.description}
-                    </p>
-                    <p className="text-xs text-muted">
-                      {tx.account} · {translateCategory(t, tx.category)}
-                    </p>
-                  </div>
-                </div>
-                <span
-                  className={cn(
-                    "text-sm font-semibold",
-                    tx.amount >= 0 ? "text-success" : "text-navy",
-                  )}
-                >
-                  {tx.amount >= 0 ? "+" : ""}
-                  {formatCurrency(Math.abs(tx.amount), "FCFA", intlLocale)}
-                </span>
-              </Link>
-            ))}
+                    {tx.amount >= 0 ? "+" : ""}
+                    {formatCurrency(Math.abs(tx.amount), "FCFA", intlLocale)}
+                  </span>
+                </Link>
+              ))
+            )}
           </div>
         </Card>
 
-        <Card className="relative overflow-hidden border-primary/20 bg-gradient-to-br from-primary-light/60 to-card dark:from-primary-light/30">
+        <Card className="relative overflow-hidden border-primary/20">
           <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-primary/5" />
           <div className="relative">
             <div className="flex items-center gap-3">
@@ -301,22 +354,48 @@ export function Dashboard() {
               </div>
               <div>
                 <p className="text-sm font-medium text-primary">
-                  {t("dashboard.aiInsight")}
+                  {t("dashboard.aiInsights")}
                 </p>
-                <Badge variant="info">
-                  {t("dashboard.confidence", { value: aiInsight.confidence })}
-                </Badge>
+                <p className="text-xs text-muted">
+                  {t("dashboard.aiInsightsSub")}
+                </p>
               </div>
             </div>
-            <p className="mt-4 text-base leading-relaxed text-navy">
-              {t("aiInsight.message")}
-            </p>
-            <Link to="/advisor">
-              <Button className="mt-6 w-full" variant="primary">
-                {t("aiInsight.action")}
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
+            <div className="mt-4 space-y-3">
+              {aiInsights.map((insight) => (
+                <div
+                  key={insight.id}
+                  className="rounded-xl border border-border bg-surface/60 p-3"
+                >
+                  <p className="text-sm leading-relaxed text-navy">
+                    {t(`aiInsights.${insight.id}.message`)}
+                  </p>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <Badge variant="info" className="text-xs">
+                      {t("dashboard.confidence", {
+                        value: insight.confidence,
+                      })}
+                    </Badge>
+                    <Badge
+                      variant={priorityVariant[insight.priority]}
+                      className="text-xs"
+                    >
+                      {t(`dashboard.priority.${insight.priority}`)}
+                    </Badge>
+                  </div>
+                  <Link to={insight.actionPath}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="mt-2 h-8 px-0 text-primary"
+                    >
+                      {t(`aiInsights.${insight.id}.action`)}
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </Button>
+                  </Link>
+                </div>
+              ))}
+            </div>
           </div>
         </Card>
       </section>

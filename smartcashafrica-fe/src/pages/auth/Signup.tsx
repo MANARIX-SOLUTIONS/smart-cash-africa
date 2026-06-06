@@ -50,7 +50,10 @@ export function Signup() {
     >
       <form onSubmit={handleSubmit} className="space-y-5">
         {error && (
-          <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-error dark:bg-red-950">
+          <p
+            role="alert"
+            className="select-text rounded-xl bg-red-50 px-4 py-3 text-sm text-error dark:bg-red-950"
+          >
             {error}
           </p>
         )}

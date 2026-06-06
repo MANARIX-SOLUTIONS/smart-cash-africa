@@ -5,14 +5,7 @@ interface SkeletonProps {
 }
 
 export function Skeleton({ className }: SkeletonProps) {
-  return (
-    <div
-      className={cn(
-        "skeleton rounded-xl bg-slate-100 dark:bg-slate-700",
-        className,
-      )}
-    />
-  );
+  return <div className={cn("skeleton rounded-xl", className)} />;
 }
 
 export function PageSkeleton() {

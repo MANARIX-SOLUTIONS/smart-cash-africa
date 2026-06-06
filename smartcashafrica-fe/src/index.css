@@ -8,41 +8,48 @@
   --color-primary-light: #e6f7f0;
   --color-navy: #0f172a;
   --color-navy-light: #1e293b;
+  --color-brand: #0f172a;
+  --color-brand-muted: #1e293b;
   --color-accent: #2563eb;
   --color-accent-light: #eff6ff;
   --color-success: #22c55e;
   --color-warning: #f59e0b;
   --color-error: #ef4444;
-  --color-background: #f8fafc;
+  --color-background: #f6f8fb;
   --color-card: #ffffff;
   --color-muted: #64748b;
   --color-border: #e2e8f0;
-  --color-surface: #f1f5f9;
-  --color-surface-hover: #f8fafc;
+  --color-surface: #eef2f6;
+  --color-surface-hover: #e2e8f0;
+  --color-overlay: rgb(15 23 42 / 0.45);
+  --color-ring: rgb(0 168 107 / 0.22);
 
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 
   --radius-card: 16px;
   --shadow-card:
-    0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.04);
+    0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.06);
   --shadow-card-hover:
-    0 4px 12px 0 rgb(0 0 0 / 0.06), 0 2px 4px -2px rgb(0 0 0 / 0.04);
+    0 8px 24px -4px rgb(15 23 42 / 0.08), 0 4px 8px -4px rgb(15 23 42 / 0.04);
 }
 
 .dark {
-  --color-primary-light: #0a2e1f;
-  --color-navy: #f1f5f9;
-  --color-navy-light: #cbd5e1;
-  --color-accent-light: #172554;
-  --color-background: #0b1120;
-  --color-card: #1e293b;
-  --color-muted: #94a3b8;
-  --color-border: #334155;
-  --color-surface: #1e293b;
-  --color-surface-hover: #334155;
-  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.2), 0 1px 2px -1px rgb(0 0 0 / 0.15);
+  --color-primary-light: rgb(0 168 107 / 0.14);
+  --color-navy: #e8edf4;
+  --color-navy-light: #94a3b8;
+  --color-accent-light: rgb(37 99 235 / 0.14);
+  --color-background: #070b14;
+  --color-card: #121a27;
+  --color-muted: #8b9cb3;
+  --color-border: #2a3a52;
+  --color-surface: #1a2435;
+  --color-surface-hover: #243044;
+  --color-overlay: rgb(0 0 0 / 0.72);
+  --color-ring: rgb(0 168 107 / 0.28);
+  --shadow-card:
+    0 0 0 1px rgb(255 255 255 / 0.04), 0 2px 8px 0 rgb(0 0 0 / 0.35);
   --shadow-card-hover:
-    0 4px 12px 0 rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+    0 0 0 1px rgb(255 255 255 / 0.06), 0 8px 24px -4px rgb(0 0 0 / 0.45);
 }
 
 * {
@@ -51,6 +58,11 @@
 
 html {
   scroll-behavior: smooth;
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
 }
 
 body {
@@ -121,8 +133,28 @@ body {
   animation: slide-up 0.3s ease-out forwards;
 }
 
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s ease-out forwards;
+}
+
 .skeleton {
-  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 25%,
+    var(--color-border) 50%,
+    var(--color-surface) 75%
+  );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -146,10 +178,15 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--color-border);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--color-muted);
+}
+
+::selection {
+  background-color: rgb(0 168 107 / 0.22);
+  color: var(--color-navy);
 }

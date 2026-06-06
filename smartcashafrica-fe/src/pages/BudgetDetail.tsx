@@ -1,4 +1,5 @@
-import { useParams } from "react-router-dom";
+import { useMemo } from "react";
+import { Link, useParams } from "react-router-dom";
 import {
   BarChart,
   Bar,
@@ -12,11 +13,10 @@ import { Card } from "@/components/ui/Card";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Badge } from "@/components/ui/Badge";
 import { BackLink } from "@/components/ui/BackLink";
-import { getBudgetById } from "@/lib/data-helpers";
 import { useAppData } from "@/context/AppDataContext";
 import { useTranslation } from "@/context/I18nContext";
-import { Link } from "react-router-dom";
 import { useChartTheme } from "@/hooks/useChartTheme";
+import { enrichBudget } from "@/lib/budget-helpers";
 import { translateCategory } from "@/lib/i18n/helpers";
 import { formatCurrency } from "@/lib/utils";
 import { NotFound } from "@/pages/NotFound";
@@ -30,12 +30,17 @@ const weeklySpending = [
 
 export function BudgetDetail() {
   const { id } = useParams();
+  const { getBudgetById, transactions } = useAppData();
   const budget = id ? getBudgetById(id) : undefined;
-  const { transactions } = useAppData();
   const { t, intlLocale } = useTranslation();
   const chart = useChartTheme();
 
-  if (!budget) return <NotFound />;
+  const enriched = useMemo(
+    () => (budget ? enrichBudget(budget, transactions) : null),
+    [budget, transactions],
+  );
+
+  if (!budget || !enriched) return <NotFound />;
 
   const categoryTxns = transactions
     .filter(
@@ -45,8 +50,8 @@ export function BudgetDetail() {
     )
     .slice(0, 5);
 
-  const remaining = budget.allocated - budget.spent;
-  const percent = (budget.spent / budget.allocated) * 100;
+  const remaining = enriched.allocated - enriched.spent;
+  const percent = (enriched.spent / enriched.allocated) * 100;
   const isWarning = percent > 85;
 
   return (
@@ -76,13 +81,13 @@ export function BudgetDetail() {
           <div>
             <p className="text-sm text-muted">{t("common.allocated")}</p>
             <p className="text-xl font-bold text-navy">
-              {formatCurrency(budget.allocated, "FCFA", intlLocale)}
+              {formatCurrency(enriched.allocated, "FCFA", intlLocale)}
             </p>
           </div>
           <div>
             <p className="text-sm text-muted">{t("common.spent")}</p>
             <p className="text-xl font-bold text-navy">
-              {formatCurrency(budget.spent, "FCFA", intlLocale)}
+              {formatCurrency(enriched.spent, "FCFA", intlLocale)}
             </p>
           </div>
           <div>
@@ -94,8 +99,8 @@ export function BudgetDetail() {
         </div>
 
         <ProgressBar
-          value={budget.spent}
-          max={budget.allocated}
+          value={enriched.spent}
+          max={enriched.allocated}
           color={isWarning ? "#F59E0B" : budget.color}
           className="mt-6"
           showLabel
@@ -126,9 +131,7 @@ export function BudgetDetail() {
               tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
             />
             <Tooltip
-              formatter={(v: number) =>
-                formatCurrency(v, "FCFA", intlLocale)
-              }
+              formatter={(v: number) => formatCurrency(v, "FCFA", intlLocale)}
               contentStyle={chart.tooltip}
             />
             <Bar dataKey="amount" fill={budget.color} radius={[4, 4, 0, 0]} />
@@ -142,9 +145,7 @@ export function BudgetDetail() {
         </h3>
         <div className="mt-4 space-y-3">
           {categoryTxns.length === 0 ? (
-            <p className="text-sm text-muted">
-              {t("budgets.noCategoryTxns")}
-            </p>
+            <p className="text-sm text-muted">{t("budgets.noCategoryTxns")}</p>
           ) : (
             categoryTxns.map((txn) => (
               <Link

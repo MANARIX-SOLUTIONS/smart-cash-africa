@@ -11,13 +11,18 @@ import {
   transactions as defaultTransactions,
   savingsGoals as defaultSavingsGoals,
   notifications as defaultNotifications,
+  budgets as defaultBudgets,
 } from "@/lib/mock-data";
+import { getAccountColor, getAccountInitials } from "@/lib/account-helpers";
+import { colorForCategory } from "@/lib/budget-helpers";
 import { downloadTransactionsCsv } from "@/lib/export";
 import type {
   Account,
   AppNotification,
   AppPreferences,
+  Budget,
   ConnectProviderInput,
+  CreateAccountInput,
   SavingsGoal,
   Transaction,
   TransactionStatus,
@@ -32,6 +37,7 @@ interface PersistedData {
   transactions: Transaction[];
   accounts: Account[];
   savingsGoals: SavingsGoal[];
+  budgets: Budget[];
   notifications: AppNotification[];
 }
 
@@ -39,6 +45,7 @@ interface AppDataContextValue {
   transactions: Transaction[];
   accounts: Account[];
   savingsGoals: SavingsGoal[];
+  budgets: Budget[];
   notifications: AppNotification[];
   preferences: AppPreferences;
   profile: UserProfile;
@@ -46,7 +53,9 @@ interface AppDataContextValue {
   getAccountById: (id: string) => Account | undefined;
   getTransactionById: (id: string) => Transaction | undefined;
   getSavingsGoalById: (id: string) => SavingsGoal | undefined;
+  getBudgetById: (id: string) => Budget | undefined;
   getTransactionsByAccount: (provider: string) => Transaction[];
+  addBudget: (input: { category: string; allocated: number }) => Budget;
   addTransaction: (input: {
     type: "income" | "expense";
     description: string;
@@ -55,6 +64,7 @@ interface AppDataContextValue {
     account: string;
   }) => Transaction;
   connectAccount: (provider: ConnectProviderInput) => Account;
+  createAccount: (input: CreateAccountInput) => Account;
   renameAccount: (id: string, nickname: string) => void;
   syncAccount: (id: string) => Promise<void>;
   syncAllAccounts: () => Promise<void>;
@@ -100,12 +110,18 @@ function loadJson<T>(key: string): T | null {
 
 function loadInitialData(): PersistedData {
   const saved = loadJson<PersistedData>(DATA_KEY);
-  if (saved) return saved;
+  if (saved) {
+    return {
+      ...saved,
+      budgets: saved.budgets ?? defaultBudgets,
+    };
+  }
 
   return {
     transactions: defaultTransactions,
     accounts: defaultAccounts,
     savingsGoals: defaultSavingsGoals,
+    budgets: defaultBudgets,
     notifications: withReadFlags(defaultNotifications),
   };
 }
@@ -173,6 +189,11 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const getSavingsGoalById = useCallback(
     (id: string) => data.savingsGoals.find((g) => g.id === id),
     [data.savingsGoals],
+  );
+
+  const getBudgetById = useCallback(
+    (id: string) => data.budgets.find((b) => b.id === id),
+    [data.budgets],
   );
 
   const getTransactionsByAccount = useCallback(
@@ -246,8 +267,9 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
   const connectAccount = useCallback(
     (provider: ConnectProviderInput) => {
+      const displayName = provider.nickname?.trim() || provider.name;
       const exists = data.accounts.some(
-        (a) => a.provider.toLowerCase() === provider.name.toLowerCase(),
+        (a) => a.provider.toLowerCase() === displayName.toLowerCase(),
       );
       if (exists) {
         throw new Error("already_connected");
@@ -255,9 +277,9 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
       const account: Account = {
         id: crypto.randomUUID(),
-        provider: provider.nickname?.trim() || provider.name,
+        provider: displayName,
         type: provider.type,
-        balance: 0,
+        balance: provider.initialBalance ?? 0,
         currency: "FCFA",
         lastActivity: "Connected · Just now",
         activityKey: "accounts.activity.connected",
@@ -272,7 +294,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           {
             id: crypto.randomUUID(),
             group: "Account Updates",
-            title: `${provider.name} connected`,
+            title: `${displayName} connected`,
             message: "Your account is ready to sync transactions.",
             time: "Just now",
             type: "success",
@@ -280,7 +302,59 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
             titleKey: "notifications.dynamic.accountConnected.title",
             messageKey: "notifications.dynamic.accountConnected.message",
             timeKey: "notifications.time.justNow",
-            params: { name: provider.name },
+            params: { name: displayName },
+          },
+          ...prev.notifications,
+        ],
+      }));
+
+      return account;
+    },
+    [data.accounts],
+  );
+
+  const createAccount = useCallback(
+    (input: CreateAccountInput) => {
+      const name = input.name.trim();
+      if (!name) {
+        throw new Error("invalid_name");
+      }
+
+      const exists = data.accounts.some(
+        (a) => a.provider.toLowerCase() === name.toLowerCase(),
+      );
+      if (exists) {
+        throw new Error("already_exists");
+      }
+
+      const account: Account = {
+        id: crypto.randomUUID(),
+        provider: name,
+        type: input.type,
+        balance: input.initialBalance ?? 0,
+        currency: "FCFA",
+        lastActivity: "Created · Just now",
+        activityKey: "accounts.activity.created",
+        color: getAccountColor(name),
+        initials: getAccountInitials(name),
+      };
+
+      setData((prev) => ({
+        ...prev,
+        accounts: [...prev.accounts, account],
+        notifications: [
+          {
+            id: crypto.randomUUID(),
+            group: "Account Updates",
+            title: `${name} created`,
+            message: "Your custom account is ready to track transactions.",
+            time: "Just now",
+            type: "success",
+            read: false,
+            titleKey: "notifications.dynamic.accountCreated.title",
+            messageKey: "notifications.dynamic.accountCreated.message",
+            timeKey: "notifications.time.justNow",
+            params: { name },
           },
           ...prev.notifications,
         ],
@@ -383,6 +457,30 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
+  const addBudget = useCallback(
+    (input: { category: string; allocated: number }) => {
+      const exists = data.budgets.some(
+        (b) => b.category.toLowerCase() === input.category.toLowerCase(),
+      );
+      if (exists) throw new Error("already_exists");
+
+      const budget: Budget = {
+        id: crypto.randomUUID(),
+        category: input.category,
+        allocated: input.allocated,
+        color: colorForCategory(input.category),
+      };
+
+      setData((prev) => ({
+        ...prev,
+        budgets: [...prev.budgets, budget],
+      }));
+
+      return budget;
+    },
+    [data.budgets],
+  );
+
   const addContribution = useCallback((goalId: string, amount: number) => {
     setData((prev) => ({
       ...prev,
@@ -436,6 +534,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       transactions: data.transactions,
       accounts: data.accounts,
       savingsGoals: data.savingsGoals,
+      budgets: data.budgets,
       notifications: data.notifications,
       preferences,
       profile,
@@ -443,9 +542,12 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       getAccountById,
       getTransactionById,
       getSavingsGoalById,
+      getBudgetById,
       getTransactionsByAccount,
       addTransaction,
+      addBudget,
       connectAccount,
+      createAccount,
       renameAccount,
       syncAccount,
       syncAllAccounts,
@@ -465,9 +567,12 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       getAccountById,
       getTransactionById,
       getSavingsGoalById,
+      getBudgetById,
       getTransactionsByAccount,
       addTransaction,
+      addBudget,
       connectAccount,
+      createAccount,
       renameAccount,
       syncAccount,
       syncAllAccounts,

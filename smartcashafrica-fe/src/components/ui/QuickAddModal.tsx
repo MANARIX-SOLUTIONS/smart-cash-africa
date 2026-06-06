@@ -70,7 +70,7 @@ export function QuickAddModal({ open, onClose }: QuickAddModalProps) {
       {open && (
         <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
           <button
-            className="absolute inset-0 bg-navy/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-overlay backdrop-blur-sm"
             onClick={onClose}
             aria-label={t("common.close")}
           />

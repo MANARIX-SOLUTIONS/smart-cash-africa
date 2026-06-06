@@ -14,45 +14,9 @@ import { useAuth } from "@/context/AuthContext";
 import { useAppData } from "@/context/AppDataContext";
 import { useTranslation } from "@/context/I18nContext";
 import { useToast } from "@/context/ToastContext";
+import { onboardingProviders } from "@/lib/providers";
+import { translateAccountType } from "@/lib/i18n/helpers";
 import { cn } from "@/lib/utils";
-
-const providers = [
-  {
-    id: "wave",
-    name: "Wave",
-    color: "#2563EB",
-    initials: "WV",
-    type: "Mobile Money",
-  },
-  {
-    id: "orange",
-    name: "Orange Money",
-    color: "#F59E0B",
-    initials: "OM",
-    type: "Mobile Money",
-  },
-  {
-    id: "ecobank",
-    name: "Ecobank",
-    color: "#00A86B",
-    initials: "EB",
-    type: "Savings Account",
-  },
-  {
-    id: "uba",
-    name: "UBA",
-    color: "#EF4444",
-    initials: "UB",
-    type: "Current Account",
-  },
-  {
-    id: "cash",
-    name: "Cash",
-    color: "#64748B",
-    initials: "CA",
-    type: "Physical Cash",
-  },
-];
 
 const stepKeys = [
   "onboarding.welcome",
@@ -80,7 +44,7 @@ export function Onboarding() {
 
   const handleComplete = () => {
     selectedProviders.forEach((providerId) => {
-      const p = providers.find((item) => item.id === providerId);
+      const p = onboardingProviders.find((item) => item.id === providerId);
       if (!p) return;
       try {
         connectAccount({
@@ -163,16 +127,17 @@ export function Onboarding() {
             </div>
 
             <div className="mt-8 grid gap-3 sm:grid-cols-2">
-              {providers.map((p) => {
-                const selected = selectedProviders.includes(p.id);
+              {onboardingProviders.map((p) => {
+                const isSelected = selectedProviders.includes(p.id);
                 return (
                   <button
                     key={p.id}
+                    type="button"
                     onClick={() => toggleProvider(p.id)}
                     className={cn(
                       "flex items-center gap-3 rounded-xl border p-4",
                       "transition-all text-left",
-                      selected
+                      isSelected
                         ? "border-primary bg-primary-light"
                         : "border-border hover:border-primary/30",
                     )}
@@ -183,10 +148,17 @@ export function Onboarding() {
                     >
                       {p.initials}
                     </div>
-                    <span className="flex-1 font-medium text-navy">
-                      {p.name}
-                    </span>
-                    {selected && <Check className="h-5 w-5 text-primary" />}
+                    <div className="flex-1">
+                      <span className="block font-medium text-navy">
+                        {p.name}
+                      </span>
+                      <span className="text-xs text-muted">
+                        {translateAccountType(t, p.type)}
+                      </span>
+                    </div>
+                    {isSelected && (
+                      <Check className="h-5 w-5 text-primary" />
+                    )}
                   </button>
                 );
               })}

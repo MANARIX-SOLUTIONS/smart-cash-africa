@@ -18,7 +18,7 @@ interface TopNavProps {
 export function TopNav({ onMenuClick }: TopNavProps) {
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const { resolvedTheme, setTheme } = useTheme();
+  const { resolvedTheme, theme, toggleTheme } = useTheme();
   const { unreadCount } = useAppData();
   const { t } = useTranslation();
 
@@ -33,16 +33,13 @@ export function TopNav({ onMenuClick }: TopNavProps) {
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
-  const toggleTheme = () => {
-    setTheme(resolvedTheme === "dark" ? "light" : "dark");
-  };
-
   return (
     <>
       <header
         className={cn(
           "sticky top-0 z-30 flex h-16 items-center gap-4",
-          "border-b border-border bg-card/80 px-4 backdrop-blur-md sm:px-6",
+          "border-b border-border bg-card/90 px-4 backdrop-blur-lg sm:px-6",
+          "dark:bg-card/85 dark:shadow-[0_1px_0_0_var(--color-border)]",
         )}
       >
         <button
@@ -80,10 +77,19 @@ export function TopNav({ onMenuClick }: TopNavProps) {
             onClick={toggleTheme}
             className={cn(
               "flex h-10 w-10 items-center justify-center rounded-xl",
-              "border border-border text-muted",
-              "transition-colors hover:bg-surface hover:text-navy",
+              "border border-border transition-colors",
+              resolvedTheme === "dark"
+                ? "bg-surface text-warning hover:bg-surface-hover"
+                : "text-muted hover:bg-surface hover:text-navy",
             )}
             aria-label={t("common.toggleTheme")}
+            title={
+              theme === "system"
+                ? t("settings.themes.system")
+                : resolvedTheme === "dark"
+                  ? t("settings.themes.dark")
+                  : t("settings.themes.light")
+            }
           >
             {resolvedTheme === "dark" ? (
               <Sun className="h-5 w-5" />
