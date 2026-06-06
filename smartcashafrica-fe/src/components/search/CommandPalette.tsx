@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import {
   Search,
   ArrowLeftRight,
+  ArrowDownLeft,
+  ArrowUpRight,
   Wallet,
   LayoutDashboard,
   Bot,
@@ -10,9 +12,10 @@ import {
   X,
 } from "lucide-react";
 import { useAppData } from "@/context/AppDataContext";
+import { useAddTransaction } from "@/context/AddTransactionContext";
 import { useTranslation } from "@/context/I18nContext";
 import { translateCategory } from "@/lib/i18n/helpers";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 interface CommandPaletteProps {
   open: boolean;
@@ -34,7 +37,8 @@ const pages = [
 export function CommandPalette({ open, onClose }: CommandPaletteProps) {
   const navigate = useNavigate();
   const { transactions, accounts } = useAppData();
-  const { t, intlLocale } = useTranslation();
+  const { openAddTransaction } = useAddTransaction();
+  const { t, formatMoney } = useTranslation();
   const [query, setQuery] = useState("");
 
   useEffect(() => {
@@ -129,7 +133,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                   key={tx.id}
                   icon={ArrowLeftRight}
                   label={tx.description}
-                  meta={`${translateCategory(t, tx.category)} · ${formatCurrency(Math.abs(tx.amount), "FCFA", intlLocale)}`}
+                  meta={`${translateCategory(t, tx.category)} · ${formatMoney(Math.abs(tx.amount))}`}
                   onClick={() => go(`/transactions/${tx.id}`)}
                 />
               ))}
@@ -143,7 +147,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                   key={a.id}
                   icon={Wallet}
                   label={a.provider}
-                  meta={formatCurrency(a.balance, "FCFA", intlLocale)}
+                  meta={formatMoney(a.balance)}
                   onClick={() => go(`/accounts/${a.id}`)}
                 />
               ))}
@@ -160,9 +164,29 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
             )}
 
           {!query && (
-            <p className="px-4 py-3 text-xs text-muted">
-              {t("common.cmdHint")}
-            </p>
+            <>
+              <Section title={t("common.actions")}>
+                <ResultRow
+                  icon={ArrowUpRight}
+                  label={t("transactions.addExpense")}
+                  onClick={() => {
+                    openAddTransaction("expense");
+                    onClose();
+                  }}
+                />
+                <ResultRow
+                  icon={ArrowDownLeft}
+                  label={t("transactions.addIncome")}
+                  onClick={() => {
+                    openAddTransaction("income");
+                    onClose();
+                  }}
+                />
+              </Section>
+              <p className="px-4 py-3 text-xs text-muted">
+                {t("common.cmdHint")}
+              </p>
+            </>
           )}
         </div>
       </div>

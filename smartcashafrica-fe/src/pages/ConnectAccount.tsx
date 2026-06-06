@@ -242,13 +242,15 @@ export function ConnectAccount() {
               <div className="mt-6 space-y-4">
                 <Input
                   label={t("common.nickname")}
-                  placeholder={`My ${provider.name}`}
+                  placeholder={t("common.nicknameTemplate", {
+                    name: provider.name,
+                  })}
                   value={nickname}
                   onChange={(e) => setNickname(e.target.value)}
                 />
                 <Input
                   label={t("common.phoneNumber")}
-                  placeholder="+221 77 000 0000"
+                  placeholder={t("common.placeholders.phone")}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                 />
@@ -321,7 +323,7 @@ export function ConnectAccount() {
               type="number"
               min="0"
               step="1"
-              placeholder="0"
+              placeholder={t("common.placeholders.amount")}
               hint={t("accounts.initialBalanceHint")}
               value={initialBalance}
               onChange={(e) => setInitialBalance(e.target.value)}
@@ -330,7 +332,7 @@ export function ConnectAccount() {
             {accountType === "Mobile Money" && (
               <Input
                 label={t("common.phoneNumber")}
-                placeholder="+221 77 000 0000"
+                placeholder={t("common.placeholders.phone")}
                 value={createPhone}
                 onChange={(e) => setCreatePhone(e.target.value)}
               />

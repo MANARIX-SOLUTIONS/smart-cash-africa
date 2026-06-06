@@ -70,7 +70,7 @@ export function Signup() {
         <Input
           label={t("common.email")}
           type="email"
-          placeholder="you@email.com"
+          placeholder={t("common.placeholders.email")}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           autoComplete="email"

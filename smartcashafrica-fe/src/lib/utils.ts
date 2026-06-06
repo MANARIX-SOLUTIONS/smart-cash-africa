@@ -5,17 +5,20 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+import {
+  DEFAULT_CURRENCY,
+  formatCurrencyAmount,
+  getCurrencyDefinition,
+} from './currencies';
+
+/** @deprecated Prefer useTranslation().formatMoney() */
 export function formatCurrency(
   amount: number,
-  currency = 'FCFA',
+  currencyCode = DEFAULT_CURRENCY,
   intlLocale = 'fr-FR',
 ): string {
-  return (
-    new Intl.NumberFormat(intlLocale, {
-      style: 'decimal',
-      maximumFractionDigits: 0,
-    }).format(amount) + ` ${currency}`
-  );
+  const definition = getCurrencyDefinition(currencyCode);
+  return formatCurrencyAmount(amount, definition, intlLocale);
 }
 
 export function formatPercent(value: number): string {

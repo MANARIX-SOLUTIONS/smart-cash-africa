@@ -20,13 +20,12 @@ import {
   translateAccountActivity,
   translateAccountType,
 } from "@/lib/i18n/helpers";
-import { formatCurrency } from "@/lib/utils";
 
 export function Accounts() {
   const { accounts, syncAccount, syncAllAccounts, renameAccount } =
     useAppData();
   const { toast } = useToast();
-  const { t, intlLocale } = useTranslation();
+  const { t, formatMoney } = useTranslation();
   const [syncingId, setSyncingId] = useState<string | null>(null);
   const [syncingAll, setSyncingAll] = useState(false);
   const [renameId, setRenameId] = useState<string | null>(null);
@@ -121,7 +120,7 @@ export function Accounts() {
               </div>
 
               <p className="mt-6 text-3xl font-bold text-navy">
-                {formatCurrency(account.balance, "FCFA", intlLocale)}
+                {formatMoney(account.balance)}
               </p>
 
               <p className="mt-2 text-sm text-muted">

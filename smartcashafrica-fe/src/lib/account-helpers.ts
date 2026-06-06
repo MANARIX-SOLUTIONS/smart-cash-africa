@@ -1,4 +1,4 @@
-import type { AccountType } from '@/types/finance';
+import type { Account, AccountType } from '@/types/finance';
 
 const ACCOUNT_COLORS = [
   '#00A86B',
@@ -26,6 +26,10 @@ export function getAccountInitials(name: string): string {
   if (words.length === 0) return 'AC';
   if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
   return (words[0][0] + words[1][0]).toUpperCase();
+}
+
+export function getAccountDisplayName(account: Account): string {
+  return account.nickname ?? account.provider;
 }
 
 export function getAccountColor(name: string): string {

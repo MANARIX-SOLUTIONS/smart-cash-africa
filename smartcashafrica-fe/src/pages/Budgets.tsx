@@ -23,7 +23,7 @@ import { budgetAnalytics } from "@/lib/mock-data";
 import { enrichBudget } from "@/lib/budget-helpers";
 import { useChartTheme } from "@/hooks/useChartTheme";
 import { translateCategory, translateMonth } from "@/lib/i18n/helpers";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 function getBudgetStatus(percent: number) {
   if (percent > 100) return "over" as const;
@@ -39,7 +39,7 @@ const statusConfig = {
 
 export function Budgets() {
   const { budgets, transactions } = useAppData();
-  const { t, intlLocale } = useTranslation();
+  const { t, formatMoney } = useTranslation();
   const chart = useChartTheme();
   const [addOpen, setAddOpen] = useState(false);
 
@@ -69,19 +69,19 @@ export function Budgets() {
           <div>
             <p className="text-sm text-muted">{t("budgets.totalBudget")}</p>
             <p className="text-2xl font-bold text-navy">
-              {formatCurrency(totalAllocated, "FCFA", intlLocale)}
+              {formatMoney(totalAllocated)}
             </p>
           </div>
           <div>
             <p className="text-sm text-muted">{t("budgets.totalSpent")}</p>
             <p className="text-2xl font-bold text-navy">
-              {formatCurrency(totalSpent, "FCFA", intlLocale)}
+              {formatMoney(totalSpent)}
             </p>
           </div>
           <div>
             <p className="text-sm text-muted">{t("budgets.remaining")}</p>
             <p className="text-2xl font-bold text-primary">
-              {formatCurrency(totalAllocated - totalSpent, "FCFA", intlLocale)}
+              {formatMoney(totalAllocated - totalSpent)}
             </p>
           </div>
         </div>
@@ -118,13 +118,13 @@ export function Budgets() {
                   <div className="flex justify-between text-sm">
                     <span className="text-muted">{t("common.allocated")}</span>
                     <span className="font-medium text-navy">
-                      {formatCurrency(budget.allocated, "FCFA", intlLocale)}
+                      {formatMoney(budget.allocated)}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted">{t("common.spent")}</span>
                     <span className="font-medium text-navy">
-                      {formatCurrency(budget.spent, "FCFA", intlLocale)}
+                      {formatMoney(budget.spent)}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
@@ -135,7 +135,7 @@ export function Budgets() {
                         status !== "onTrack" ? "text-warning" : "text-primary",
                       )}
                     >
-                      {formatCurrency(remaining, "FCFA", intlLocale)}
+                      {formatMoney(remaining)}
                     </span>
                   </div>
                 </div>
@@ -191,7 +191,7 @@ export function Budgets() {
                 />
                 <Tooltip
                   formatter={(value: number) =>
-                    formatCurrency(value, "FCFA", intlLocale)
+                    formatMoney(value)
                   }
                   contentStyle={chart.tooltip}
                 />
@@ -234,7 +234,7 @@ export function Budgets() {
                           overBudget ? "text-warning" : "text-primary",
                         )}
                       >
-                        {formatCurrency(item.predicted, "FCFA", intlLocale)}
+                        {formatMoney(item.predicted)}
                       </span>
                     </div>
                     <ProgressBar

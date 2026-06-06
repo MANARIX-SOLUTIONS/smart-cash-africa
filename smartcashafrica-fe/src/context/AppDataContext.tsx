@@ -16,6 +16,9 @@ import {
 import { getAccountColor, getAccountInitials } from "@/lib/account-helpers";
 import { colorForCategory } from "@/lib/budget-helpers";
 import { downloadTransactionsCsv } from "@/lib/export";
+import { DEFAULT_CURRENCY, getCurrencyDefinition } from "@/lib/currencies";
+import { detectBrowserLocale, translate, type Locale } from "@/lib/i18n";
+import { getExportCsvHeaders } from "@/lib/i18n/helpers";
 import type {
   Account,
   AppNotification,
@@ -62,6 +65,7 @@ interface AppDataContextValue {
     amount: number;
     category: string;
     account: string;
+    date?: string;
   }) => Transaction;
   connectAccount: (provider: ConnectProviderInput) => Account;
   createAccount: (input: CreateAccountInput) => Account;
@@ -136,12 +140,20 @@ function loadInitialProfile(): UserProfile {
 }
 
 function loadInitialPreferences(): AppPreferences {
-  return (
-    loadJson<AppPreferences>(PREFS_KEY) ?? {
-      language: "fr",
-      notificationPrefs: defaultNotificationPrefs,
-    }
-  );
+  const saved = loadJson<AppPreferences>(PREFS_KEY);
+  if (saved) {
+    return {
+      language: saved.language ?? detectBrowserLocale(),
+      currency: saved.currency ?? DEFAULT_CURRENCY,
+      notificationPrefs: saved.notificationPrefs ?? defaultNotificationPrefs,
+    };
+  }
+
+  return {
+    language: detectBrowserLocale(),
+    currency: DEFAULT_CURRENCY,
+    notificationPrefs: defaultNotificationPrefs,
+  };
 }
 
 function predictDate(monthly: number, remaining: number): string {
@@ -209,6 +221,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       amount: number;
       category: string;
       account: string;
+      date?: string;
     }) => {
       const amount =
         input.type === "income"
@@ -217,7 +230,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       const status: TransactionStatus = "completed";
       const tx: Transaction = {
         id: crypto.randomUUID(),
-        date: new Date().toISOString().slice(0, 10),
+        date: input.date ?? new Date().toISOString().slice(0, 10),
         description: input.description,
         category: input.category,
         account: input.account,
@@ -280,7 +293,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         provider: displayName,
         type: provider.type,
         balance: provider.initialBalance ?? 0,
-        currency: "FCFA",
+        currency: getCurrencyDefinition(preferences.currency).symbol,
         lastActivity: "Connected · Just now",
         activityKey: "accounts.activity.connected",
         color: provider.color,
@@ -310,7 +323,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
       return account;
     },
-    [data.accounts],
+    [data.accounts, preferences.currency],
   );
 
   const createAccount = useCallback(
@@ -332,7 +345,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         provider: name,
         type: input.type,
         balance: input.initialBalance ?? 0,
-        currency: "FCFA",
+        currency: getCurrencyDefinition(preferences.currency).symbol,
         lastActivity: "Created · Just now",
         activityKey: "accounts.activity.created",
         color: getAccountColor(name),
@@ -362,7 +375,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
       return account;
     },
-    [data.accounts],
+    [data.accounts, preferences.currency],
   );
 
   const renameAccount = useCallback((id: string, nickname: string) => {
@@ -510,9 +523,19 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
   const exportTransactions = useCallback(
     (items?: Transaction[]) => {
-      downloadTransactionsCsv(items ?? data.transactions);
+      const locale = (
+        ["en", "fr", "wo"].includes(preferences.language)
+          ? preferences.language
+          : "fr"
+      ) as Locale;
+      const t = (key: string) => translate(locale, key);
+      downloadTransactionsCsv(
+        items ?? data.transactions,
+        "smartcash-transactions.csv",
+        getExportCsvHeaders(t),
+      );
     },
-    [data.transactions],
+    [data.transactions, preferences.language],
   );
 
   const updateProfile = useCallback((fields: Partial<UserProfile>) => {

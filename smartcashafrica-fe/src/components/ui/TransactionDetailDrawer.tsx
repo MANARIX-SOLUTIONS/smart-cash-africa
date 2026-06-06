@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/Button";
 import { useTranslation } from "@/context/I18nContext";
 import { translateCategory, translateStatus } from "@/lib/i18n/helpers";
 import type { Transaction } from "@/types/finance";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 const statusVariant = {
   completed: "success",
@@ -32,7 +32,7 @@ export function TransactionDetailDrawer({
   transaction,
   onClose,
 }: TransactionDetailDrawerProps) {
-  const { t, intlLocale } = useTranslation();
+  const { t, formatMoney, intlLocale } = useTranslation();
 
   useEffect(() => {
     if (!transaction) return;
@@ -92,7 +92,7 @@ export function TransactionDetailDrawer({
               )}
             >
               {isIncome ? "+" : "−"}
-              {formatCurrency(Math.abs(transaction.amount), "FCFA", intlLocale)}
+              {formatMoney(Math.abs(transaction.amount))}
             </p>
             <p className="mt-2 text-lg font-medium text-navy">{merchant}</p>
             <Badge variant={statusVariant[transaction.status]} className="mt-3">

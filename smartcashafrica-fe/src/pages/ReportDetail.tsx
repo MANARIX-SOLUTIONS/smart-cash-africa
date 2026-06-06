@@ -25,11 +25,12 @@ import {
   translateCategory,
   translateHealthCategory,
   translateHealthRecommendation,
+  translateExportFormat,
   translateReport,
+  translateReportPeriod,
   translateSummaryCard,
 } from "@/lib/i18n/helpers";
 import { summaryCards, categorySpending, healthScores } from "@/lib/mock-data";
-import { formatCurrency } from "@/lib/utils";
 import { NotFound } from "@/pages/NotFound";
 
 export function ReportDetail() {
@@ -37,7 +38,7 @@ export function ReportDetail() {
   const report = id ? getReportById(id) : undefined;
   const { toast } = useToast();
   const { savingsGoals, budgets, transactions } = useAppData();
-  const { t, intlLocale } = useTranslation();
+  const { t, formatMoney } = useTranslation();
   const chart = useChartTheme();
 
   const enrichedBudgets = useMemo(
@@ -56,9 +57,15 @@ export function ReportDetail() {
     downloadReportFile(
       translated.name,
       format,
-      `${translated.name}\n${translated.description}\nPeriod: ${report.period}`,
+      `${translated.name}\n${translated.description}\n${t("reports.periodLabel")}: ${translateReportPeriod(t, report.period)}`,
     );
-    toast(t("reports.exported", { name: translated.name, format }), "success");
+    toast(
+      t("reports.exported", {
+        name: translated.name,
+        format: translateExportFormat(t, format),
+      }),
+      "success",
+    );
   };
 
   const handlePrint = () => {
@@ -66,7 +73,7 @@ export function ReportDetail() {
   };
 
   const handleShare = async () => {
-    const text = `${translated.name} — ${report.period}\n${translated.description}`;
+    const text = `${translated.name} — ${translateReportPeriod(t, report.period)}\n${translated.description}`;
     if (navigator.share) {
       await navigator.share({ title: translated.name, text });
       toast(t("reports.shared"), "success");
@@ -91,7 +98,7 @@ export function ReportDetail() {
           <h1 className="text-3xl font-bold text-navy">{translated.name}</h1>
           <p className="mt-1 text-muted">{translated.description}</p>
           <p className="mt-2 text-sm font-medium text-primary">
-            {report.period}
+            {translateReportPeriod(t, report.period)}
           </p>
         </div>
         <div className="flex gap-2">
@@ -143,7 +150,7 @@ export function ReportDetail() {
                   <p className="mt-1 text-lg font-bold text-navy">
                     {c.isPercent
                       ? `${c.value}%`
-                      : formatCurrency(c.value, "FCFA", intlLocale)}
+                      : formatMoney(c.value)}
                   </p>
                 </div>
               ))}
@@ -177,7 +184,7 @@ export function ReportDetail() {
                 />
                 <Tooltip
                   formatter={(value: number) =>
-                    formatCurrency(value, "FCFA", intlLocale)
+                    formatMoney(value)
                   }
                   contentStyle={chart.tooltip}
                 />
@@ -198,7 +205,7 @@ export function ReportDetail() {
                     {translateCategory(t, cat.category)}
                   </span>
                   <span className="font-semibold text-navy">
-                    {formatCurrency(cat.amount, "FCFA", intlLocale)}
+                    {formatMoney(cat.amount)}
                   </span>
                 </div>
               ))}
@@ -222,8 +229,8 @@ export function ReportDetail() {
                 </span>
                 <div className="text-right text-sm">
                   <p className="text-muted">
-                    {formatCurrency(b.spent, "FCFA", intlLocale)} /{" "}
-                    {formatCurrency(b.allocated, "FCFA", intlLocale)}
+                    {formatMoney(b.spent)} /{" "}
+                    {formatMoney(b.allocated)}
                   </p>
                   <p className="font-medium text-primary">
                     {((b.spent / b.allocated) * 100).toFixed(0)}%

@@ -18,7 +18,6 @@ import { useTranslation } from "@/context/I18nContext";
 import { useChartTheme } from "@/hooks/useChartTheme";
 import { enrichBudget } from "@/lib/budget-helpers";
 import { translateCategory } from "@/lib/i18n/helpers";
-import { formatCurrency } from "@/lib/utils";
 import { NotFound } from "@/pages/NotFound";
 
 const weeklySpending = [
@@ -32,7 +31,7 @@ export function BudgetDetail() {
   const { id } = useParams();
   const { getBudgetById, transactions } = useAppData();
   const budget = id ? getBudgetById(id) : undefined;
-  const { t, intlLocale } = useTranslation();
+  const { t, formatMoney } = useTranslation();
   const chart = useChartTheme();
 
   const enriched = useMemo(
@@ -81,19 +80,19 @@ export function BudgetDetail() {
           <div>
             <p className="text-sm text-muted">{t("common.allocated")}</p>
             <p className="text-xl font-bold text-navy">
-              {formatCurrency(enriched.allocated, "FCFA", intlLocale)}
+              {formatMoney(enriched.allocated)}
             </p>
           </div>
           <div>
             <p className="text-sm text-muted">{t("common.spent")}</p>
             <p className="text-xl font-bold text-navy">
-              {formatCurrency(enriched.spent, "FCFA", intlLocale)}
+              {formatMoney(enriched.spent)}
             </p>
           </div>
           <div>
             <p className="text-sm text-muted">{t("common.remaining")}</p>
             <p className="text-xl font-bold text-primary">
-              {formatCurrency(remaining, "FCFA", intlLocale)}
+              {formatMoney(remaining)}
             </p>
           </div>
         </div>
@@ -131,7 +130,7 @@ export function BudgetDetail() {
               tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
             />
             <Tooltip
-              formatter={(v: number) => formatCurrency(v, "FCFA", intlLocale)}
+              formatter={(v: number) => formatMoney(v)}
               contentStyle={chart.tooltip}
             />
             <Bar dataKey="amount" fill={budget.color} radius={[4, 4, 0, 0]} />
@@ -160,7 +159,7 @@ export function BudgetDetail() {
                   </span>
                 </span>
                 <span className="font-medium text-muted">
-                  {formatCurrency(Math.abs(txn.amount), "FCFA", intlLocale)}
+                  {formatMoney(Math.abs(txn.amount))}
                 </span>
               </Link>
             ))

@@ -76,9 +76,7 @@ export function Onboarding() {
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
               <span className="text-sm font-bold text-white">SC</span>
             </div>
-            <span className="font-semibold text-navy">
-              {t("brand.name")}
-            </span>
+            <span className="font-semibold text-navy">{t("brand.name")}</span>
           </div>
           <div className="flex gap-2">
             {stepKeys.map((key, i) => (
@@ -156,9 +154,7 @@ export function Onboarding() {
                         {translateAccountType(t, p.type)}
                       </span>
                     </div>
-                    {isSelected && (
-                      <Check className="h-5 w-5 text-primary" />
-                    )}
+                    {isSelected && <Check className="h-5 w-5 text-primary" />}
                   </button>
                 );
               })}
@@ -195,7 +191,7 @@ export function Onboarding() {
               <Input
                 label={t("onboarding.monthlyIncome")}
                 type="number"
-                placeholder="1,250,000"
+                placeholder={t("common.placeholders.incomeExample")}
                 value={monthlyIncome}
                 onChange={(e) => setMonthlyIncome(e.target.value)}
               />

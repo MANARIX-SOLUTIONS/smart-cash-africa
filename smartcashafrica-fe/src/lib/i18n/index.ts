@@ -1,5 +1,6 @@
 import { en, type Messages } from './en';
 import { fr } from './fr';
+import { LOCALE_CONFIG } from './locales';
 import { wo } from './wo';
 import type { Locale, TranslationParams } from './types';
 
@@ -29,6 +30,37 @@ function interpolate(template: string, params?: TranslationParams): string {
   });
 }
 
+export function detectBrowserLocale(): Locale {
+  if (typeof navigator === 'undefined') return 'fr';
+
+  const langs = navigator.languages?.length
+    ? navigator.languages
+    : [navigator.language];
+
+  for (const lang of langs) {
+    const code = lang.toLowerCase().split('-')[0];
+    if (code === 'wo') return 'wo';
+    if (code === 'fr') return 'fr';
+    if (code === 'en') return 'en';
+  }
+
+  return 'fr';
+}
+
+export function pluralize(
+  locale: Locale,
+  count: number,
+  forms: { one: string; other: string },
+): string {
+  if (locale === 'en') {
+    return count === 1 ? forms.one : forms.other;
+  }
+  if (locale === 'fr') {
+    return count <= 1 ? forms.one : forms.other;
+  }
+  return count === 1 ? forms.one : forms.other;
+}
+
 export function translate(
   locale: Locale,
   key: string,
@@ -44,14 +76,7 @@ export function translate(
 }
 
 export function getIntlLocale(locale: Locale): string {
-  switch (locale) {
-    case 'fr':
-      return 'fr-FR';
-    case 'wo':
-      return 'fr-SN';
-    default:
-      return 'en-GB';
-  }
+  return LOCALE_CONFIG[locale]?.intlLocale ?? 'fr-FR';
 }
 
 export function getGreetingKey(): string {
@@ -61,5 +86,28 @@ export function getGreetingKey(): string {
   return 'greeting.evening';
 }
 
+export function formatLocalizedDate(
+  intlLocale: string,
+  date: Date | string,
+  options: Intl.DateTimeFormatOptions = {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  },
+): string {
+  const value = typeof date === 'string' ? new Date(date) : date;
+  return new Intl.DateTimeFormat(intlLocale, options).format(value);
+}
+
+export function formatLocalizedNumber(
+  intlLocale: string,
+  value: number,
+  options?: Intl.NumberFormatOptions,
+): string {
+  return new Intl.NumberFormat(intlLocale, options).format(value);
+}
+
+export { LOCALE_CONFIG, LOCALE_ORDER } from './locales';
 export { en, fr, wo };
-export type { Locale, Messages };
+export type { Messages } from './en';
+export type { Locale, TranslationParams } from './types';

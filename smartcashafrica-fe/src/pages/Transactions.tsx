@@ -1,16 +1,17 @@
 import { useMemo, useState } from "react";
-import { Search, Download, SlidersHorizontal } from "lucide-react";
+import { Search, Download, SlidersHorizontal, Plus } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { TransactionDetailDrawer } from "@/components/ui/TransactionDetailDrawer";
 import { useAppData } from "@/context/AppDataContext";
+import { useAddTransaction } from "@/context/AddTransactionContext";
 import { useTranslation } from "@/context/I18nContext";
 import { useToast } from "@/context/ToastContext";
 import { translateCategory, translateStatus } from "@/lib/i18n/helpers";
 import type { Transaction } from "@/types/finance";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 const statusVariant = {
   completed: "success",
@@ -20,8 +21,9 @@ const statusVariant = {
 
 export function Transactions() {
   const { transactions, exportTransactions } = useAppData();
+  const { openAddTransaction } = useAddTransaction();
   const { toast } = useToast();
-  const { t, intlLocale } = useTranslation();
+  const { t, formatMoney, intlLocale } = useTranslation();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [provider, setProvider] = useState("all");
@@ -83,14 +85,20 @@ export function Transactions() {
         title={t("transactions.title")}
         subtitle={t("transactions.subtitle")}
         action={
-          <Button
-            variant="outline"
-            onClick={handleExport}
-            disabled={!filtered.length}
-          >
-            <Download className="h-4 w-4" />
-            {t("common.export")}
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={() => openAddTransaction("expense")}>
+              <Plus className="h-4 w-4" />
+              {t("transactions.add")}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleExport}
+              disabled={!filtered.length}
+            >
+              <Download className="h-4 w-4" />
+              {t("common.export")}
+            </Button>
+          </div>
         }
       />
 
@@ -175,14 +183,14 @@ export function Transactions() {
                 type="number"
                 value={minAmount}
                 onChange={setMinAmount}
-                placeholder="0"
+                placeholder={t("common.placeholders.amount")}
               />
               <FilterInput
                 label={t("transactions.maxAmount")}
                 type="number"
                 value={maxAmount}
                 onChange={setMaxAmount}
-                placeholder="1000000"
+                placeholder={t("common.placeholders.amountMax")}
               />
             </div>
           )}
@@ -237,7 +245,7 @@ export function Transactions() {
                       )}
                     >
                       {tx.amount >= 0 ? "+" : ""}
-                      {formatCurrency(Math.abs(tx.amount), "FCFA", intlLocale)}
+                      {formatMoney(Math.abs(tx.amount))}
                     </td>
                     <td className="px-6 py-4">
                       <Badge variant={statusVariant[tx.status]}>
@@ -256,6 +264,19 @@ export function Transactions() {
         transaction={selectedTx}
         onClose={() => setSelectedTx(null)}
       />
+
+      <button
+        type="button"
+        onClick={() => openAddTransaction("expense")}
+        className={cn(
+          "fixed bottom-6 right-6 z-20 flex h-14 w-14 items-center",
+          "justify-center rounded-full bg-primary text-white shadow-lg",
+          "transition-transform hover:scale-105 active:scale-95 sm:hidden",
+        )}
+        aria-label={t("transactions.add")}
+      >
+        <Plus className="h-6 w-6" />
+      </button>
     </div>
   );
 }

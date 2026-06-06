@@ -46,7 +46,7 @@ import {
   translateMonth,
   translateSummaryCard,
 } from "@/lib/i18n/helpers";
-import { cn, formatCurrency, formatPercent } from "@/lib/utils";
+import { cn, formatPercent } from "@/lib/utils";
 
 const iconMap = {
   wallet: Wallet,
@@ -65,7 +65,7 @@ const priorityVariant = {
 export function Dashboard() {
   const { user } = useAuth();
   const { transactions } = useAppData();
-  const { t, greeting, intlLocale } = useTranslation();
+  const { t, greeting, formatMoney, intlLocale } = useTranslation();
   const [txnSearch, setTxnSearch] = useState("");
   const chart = useChartTheme();
   const firstName = user?.name.split(" ")[0] ?? "there";
@@ -202,7 +202,7 @@ export function Dashboard() {
                 </Pie>
                 <Tooltip
                   formatter={(value: number) =>
-                    formatCurrency(value, "FCFA", intlLocale)
+                    formatMoney(value)
                   }
                   contentStyle={chart.tooltip}
                 />
@@ -219,7 +219,7 @@ export function Dashboard() {
                     {translateCashDist(t, item.name)}
                   </span>
                   <span className="text-sm font-medium text-navy">
-                    {formatCurrency(item.value, "FCFA", intlLocale)}
+                    {formatMoney(item.value)}
                   </span>
                 </div>
               ))}
@@ -256,7 +256,7 @@ export function Dashboard() {
               />
               <Tooltip
                 formatter={(value: number) =>
-                  formatCurrency(value, "FCFA", intlLocale)
+                  formatMoney(value)
                 }
                 contentStyle={chart.tooltip}
               />
@@ -337,7 +337,7 @@ export function Dashboard() {
                     )}
                   >
                     {tx.amount >= 0 ? "+" : ""}
-                    {formatCurrency(Math.abs(tx.amount), "FCFA", intlLocale)}
+                    {formatMoney(Math.abs(tx.amount))}
                   </span>
                 </Link>
               ))
@@ -420,7 +420,7 @@ export function Dashboard() {
                       {translateCategory(t, cat.category)}
                     </span>
                     <span className="text-muted">
-                      {formatCurrency(cat.amount, "FCFA", intlLocale)}
+                      {formatMoney(cat.amount)}
                     </span>
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-surface">

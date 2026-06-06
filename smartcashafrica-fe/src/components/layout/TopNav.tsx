@@ -37,7 +37,7 @@ export function TopNav({ onMenuClick }: TopNavProps) {
     <>
       <header
         className={cn(
-          "sticky top-0 z-30 flex h-16 items-center gap-4",
+          "sticky top-0 z-30 flex h-16 items-center justify-between gap-4",
           "border-b border-border bg-card/90 px-4 backdrop-blur-lg sm:px-6",
           "dark:bg-card/85 dark:shadow-[0_1px_0_0_var(--color-border)]",
         )}

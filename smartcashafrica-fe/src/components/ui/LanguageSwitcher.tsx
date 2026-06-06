@@ -1,10 +1,8 @@
 import { Globe, Check } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "@/context/I18nContext";
-import type { Locale } from "@/lib/i18n/types";
+import { LOCALE_CONFIG, LOCALE_ORDER } from "@/lib/i18n/locales";
 import { cn } from "@/lib/utils";
-
-const locales: Locale[] = ["fr", "en", "wo"];
 
 interface LanguageSwitcherProps {
   variant?: "default" | "compact";
@@ -18,6 +16,7 @@ export function LanguageSwitcher({
   const { locale, setLocale, t } = useTranslation();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const current = LOCALE_CONFIG[locale];
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -40,37 +39,58 @@ export function LanguageSwitcher({
           variant === "compact" ? "h-10 px-3" : "h-10 px-3",
         )}
         aria-label={t("settings.language")}
+        aria-expanded={open}
+        aria-haspopup="listbox"
       >
+        <span className="text-base leading-none" aria-hidden>
+          {current.flag}
+        </span>
+        {variant === "default" ? (
+          <span>{current.nativeName}</span>
+        ) : (
+          <span className="uppercase">{locale}</span>
+        )}
         <Globe className="h-4 w-4 text-muted" />
-        <span className="uppercase">{locale}</span>
       </button>
 
       {open && (
         <div
+          role="listbox"
+          aria-label={t("settings.language")}
           className={cn(
-            "absolute right-0 top-full z-50 mt-2 min-w-[160px]",
+            "absolute right-0 top-full z-50 mt-2 min-w-[200px]",
             "rounded-xl border border-border bg-card py-1 shadow-lg",
             "animate-fade-in",
           )}
         >
-          {locales.map((code) => (
-            <button
-              key={code}
-              type="button"
-              onClick={() => {
-                setLocale(code);
-                setOpen(false);
-              }}
-              className={cn(
-                "flex w-full items-center justify-between px-4 py-2.5",
-                "text-left text-sm transition-colors hover:bg-surface",
-                locale === code && "text-primary",
-              )}
-            >
-              {t(`settings.languages.${code}`)}
-              {locale === code && <Check className="h-4 w-4" />}
-            </button>
-          ))}
+          {LOCALE_ORDER.map((code) => {
+            const config = LOCALE_CONFIG[code];
+            const isActive = locale === code;
+            return (
+              <button
+                key={code}
+                type="button"
+                role="option"
+                aria-selected={isActive}
+                onClick={() => {
+                  setLocale(code);
+                  setOpen(false);
+                }}
+                className={cn(
+                  "flex w-full items-center gap-3 px-4 py-2.5",
+                  "text-left text-sm transition-colors hover:bg-surface",
+                  isActive && "bg-primary-light/50 text-primary",
+                )}
+              >
+                <span className="text-lg leading-none">{config.flag}</span>
+                <div className="flex-1">
+                  <p className="font-medium text-navy">{config.nativeName}</p>
+                  <p className="text-xs text-muted">{t(config.labelKey)}</p>
+                </div>
+                {isActive && <Check className="h-4 w-4 shrink-0" />}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>

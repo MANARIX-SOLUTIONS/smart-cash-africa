@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Sparkles, Plus, TrendingUp, Loader2 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
@@ -11,24 +11,26 @@ import { useAppData } from "@/context/AppDataContext";
 import { useToast } from "@/context/ToastContext";
 import { useTranslation } from "@/context/I18nContext";
 import { translateSavingsTip } from "@/lib/i18n/helpers";
-import { formatCurrency } from "@/lib/utils";
 import { NotFound } from "@/pages/NotFound";
 
 export function SavingsGoalDetail() {
   const { id } = useParams();
   const { getSavingsGoalById, addContribution } = useAppData();
   const { toast } = useToast();
-  const { t, intlLocale } = useTranslation();
+  const { t, formatDate, formatMoney } = useTranslation();
   const [amount, setAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [contributions, setContributions] = useState<
-    { date: string; amount: number }[]
-  >([
-    { date: "Jun 5, 2026", amount: 50_000 },
-    { date: "Jun 1, 2026", amount: 50_000 },
-    { date: "May 28, 2026", amount: 75_000 },
-    { date: "May 15, 2026", amount: 50_000 },
-  ]);
+  const seedContributions = useMemo(
+    () => [
+      { date: "2026-06-05", amount: 50_000 },
+      { date: "2026-06-01", amount: 50_000 },
+      { date: "2026-05-28", amount: 75_000 },
+      { date: "2026-05-15", amount: 50_000 },
+    ],
+    [],
+  );
+
+  const [contributions, setContributions] = useState(seedContributions);
 
   const goal = id ? getSavingsGoalById(id) : undefined;
 
@@ -48,11 +50,7 @@ export function SavingsGoalDetail() {
     addContribution(goal.id, value);
     setContributions((prev) => [
       {
-        date: new Date().toLocaleDateString(intlLocale, {
-          day: "numeric",
-          month: "short",
-          year: "numeric",
-        }),
+        date: new Date().toISOString().slice(0, 10),
         amount: value,
       },
       ...prev,
@@ -61,7 +59,7 @@ export function SavingsGoalDetail() {
     setIsLoading(false);
     toast(
       t("savings.added", {
-        amount: formatCurrency(value, "FCFA", intlLocale),
+        amount: formatMoney(value),
         name: goal.name,
       }),
       "success",
@@ -81,20 +79,20 @@ export function SavingsGoalDetail() {
             <h1 className="text-3xl font-bold text-navy">{goal.name}</h1>
             <p className="mt-1 text-muted">
               {t("savings.targetLabel", {
-                amount: formatCurrency(goal.target, "FCFA", intlLocale),
+                amount: formatMoney(goal.target),
               })}
             </p>
             <div className="mt-4 flex flex-wrap gap-4">
               <div>
                 <p className="text-xs text-muted">{t("common.saved")}</p>
                 <p className="text-lg font-bold text-primary">
-                  {formatCurrency(goal.current, "FCFA", intlLocale)}
+                  {formatMoney(goal.current)}
                 </p>
               </div>
               <div>
                 <p className="text-xs text-muted">{t("common.remaining")}</p>
                 <p className="text-lg font-bold text-navy">
-                  {formatCurrency(remaining, "FCFA", intlLocale)}
+                  {formatMoney(remaining)}
                 </p>
               </div>
               <div>
@@ -140,7 +138,7 @@ export function SavingsGoalDetail() {
             </h3>
           </div>
           <p className="mt-2 text-2xl font-bold text-navy">
-            {formatCurrency(monthly, "FCFA", intlLocale)}
+            {formatMoney(monthly)}
           </p>
           <p className="text-sm text-muted">{t("savings.stayOnTrack")}</p>
           <form onSubmit={handleContribution} className="mt-4 space-y-3">
@@ -179,9 +177,9 @@ export function SavingsGoalDetail() {
                 key={`${c.date}-${c.amount}`}
                 className="flex justify-between text-sm"
               >
-                <span className="text-muted">{c.date}</span>
+                <span className="text-muted">{formatDate(c.date)}</span>
                 <span className="font-medium text-success">
-                  +{formatCurrency(c.amount, "FCFA", intlLocale)}
+                  +{formatMoney(c.amount)}
                 </span>
               </div>
             ))}

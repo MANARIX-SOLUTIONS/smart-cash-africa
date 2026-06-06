@@ -9,9 +9,13 @@ import { BackLink } from "@/components/ui/BackLink";
 import { useAppData } from "@/context/AppDataContext";
 import { useTranslation } from "@/context/I18nContext";
 import { useToast } from "@/context/ToastContext";
-import { translateCategory, translateStatus } from "@/lib/i18n/helpers";
+import {
+  getExportCsvHeaders,
+  translateCategory,
+  translateStatus,
+} from "@/lib/i18n/helpers";
 import { downloadTransactionsCsv } from "@/lib/export";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { NotFound } from "@/pages/NotFound";
 
 const statusVariant = {
@@ -24,7 +28,7 @@ export function TransactionDetail() {
   const { id } = useParams();
   const { getTransactionById } = useAppData();
   const { toast } = useToast();
-  const { t, intlLocale } = useTranslation();
+  const { t, formatMoney, intlLocale } = useTranslation();
   const [note, setNote] = useState("");
   const [showNote, setShowNote] = useState(false);
 
@@ -45,7 +49,11 @@ export function TransactionDetail() {
   };
 
   const handleReceipt = () => {
-    downloadTransactionsCsv([tx], `receipt-${tx.id}.csv`);
+    downloadTransactionsCsv(
+      [tx],
+      `receipt-${tx.id}.csv`,
+      getExportCsvHeaders(t),
+    );
     toast(t("transactions.receiptDownloaded"), "success");
   };
 
@@ -88,7 +96,7 @@ export function TransactionDetail() {
           )}
         >
           {isIncome ? "+" : "-"}
-          {formatCurrency(Math.abs(tx.amount), "FCFA", intlLocale)}
+          {formatMoney(Math.abs(tx.amount))}
         </p>
         <h1 className="mt-2 text-xl font-semibold text-navy">
           {tx.description}

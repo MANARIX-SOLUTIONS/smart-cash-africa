@@ -6,6 +6,7 @@ import {
   Link2,
   Bell,
   Globe,
+  Coins,
   Palette,
   CreditCard,
   Sun,
@@ -26,7 +27,12 @@ import { useToast } from "@/context/ToastContext";
 import { useTranslation } from "@/context/I18nContext";
 import type { Locale } from "@/lib/i18n/types";
 import { translateAccountType } from "@/lib/i18n/helpers";
-import { cn, formatCurrency } from "@/lib/utils";
+import {
+  CURRENCY_GROUPS,
+  CURRENCY_OPTIONS,
+  getCurrenciesByGroup,
+} from "@/lib/currencies";
+import { cn } from "@/lib/utils";
 
 const sectionIds = [
   "profile",
@@ -34,6 +40,7 @@ const sectionIds = [
   "accounts",
   "notifications",
   "language",
+  "currency",
   "theme",
   "subscription",
   "privacy",
@@ -45,13 +52,14 @@ const sectionIcons = {
   accounts: Link2,
   notifications: Bell,
   language: Globe,
+  currency: Coins,
   theme: Palette,
   subscription: CreditCard,
   privacy: ShieldCheck,
 } as const;
 
 const languageFlags: Record<Locale, string> = {
-  fr: "🇸🇳",
+  fr: "🇫🇷",
   en: "🇬🇧",
   wo: "🇸🇳",
 };
@@ -86,7 +94,7 @@ export function Settings() {
   const { accounts, profile, preferences, updateProfile, updatePreferences } =
     useAppData();
   const { toast } = useToast();
-  const { t, intlLocale, setLocale } = useTranslation();
+  const { t, formatMoney, setLocale, setCurrency, currency } = useTranslation();
   const navigate = useNavigate();
 
   const sections = useMemo(
@@ -307,7 +315,7 @@ export function Settings() {
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-semibold text-navy">
-                        {formatCurrency(account.balance, "FCFA", intlLocale)}
+                        {formatMoney(account.balance)}
                       </p>
                       <p className="text-xs text-success">
                         {t("common.synced")}
@@ -363,9 +371,14 @@ export function Settings() {
 
           {active === "language" && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-semibold text-navy">
-                {t("settings.language")}
-              </h2>
+              <div>
+                <h2 className="text-2xl font-semibold text-navy">
+                  {t("settings.language")}
+                </h2>
+                <p className="mt-1 text-sm text-muted">
+                  {t("settings.languageDesc")}
+                </p>
+              </div>
               <div className="grid gap-3 sm:grid-cols-3">
                 {languages.map((lang) => (
                   <button
@@ -396,6 +409,85 @@ export function Settings() {
                   </button>
                 ))}
               </div>
+            </div>
+          )}
+
+          {active === "currency" && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-semibold text-navy">
+                  {t("settings.currency")}
+                </h2>
+                <p className="mt-1 text-sm text-muted">
+                  {t("settings.currencyDesc")}
+                </p>
+              </div>
+              <div className="max-h-[65vh] space-y-6 overflow-y-auto pr-1">
+                {CURRENCY_GROUPS.map((group) => {
+                  const groupKey = `settings.currencyGroups.${group}`;
+                  const options = getCurrenciesByGroup(groupKey);
+                  if (options.length === 0) return null;
+
+                  return (
+                    <section key={group}>
+                      <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted">
+                        {t(groupKey)}
+                      </h3>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        {options.map((option) => (
+                          <button
+                            key={option.code}
+                            type="button"
+                            onClick={() => {
+                              setCurrency(option.code);
+                              toast(
+                                t("settings.currencySet", {
+                                  currency: t(
+                                    `settings.currencies.${option.code}`,
+                                  ),
+                                }),
+                                "success",
+                              );
+                            }}
+                            className={cn(
+                              "flex items-center gap-4 rounded-xl border p-4 text-left",
+                              "transition-all",
+                              currency === option.code
+                                ? "border-primary bg-primary-light ring-2 ring-ring"
+                                : "border-border hover:border-primary/30 hover:bg-surface/50",
+                            )}
+                          >
+                            <div
+                              className={cn(
+                                "flex h-12 w-12 shrink-0 items-center justify-center",
+                                "rounded-xl bg-surface text-xs font-bold text-navy",
+                              )}
+                            >
+                              {option.symbol}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="font-semibold text-navy">
+                                {t(`settings.currencies.${option.code}`)}
+                              </p>
+                              <p className="text-xs text-muted">
+                                {option.code} · {t(option.regionKey)}
+                              </p>
+                            </div>
+                            {currency === option.code && (
+                              <Check className="h-5 w-5 shrink-0 text-primary" />
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </section>
+                  );
+                })}
+              </div>
+              <p className="text-xs text-muted">
+                {t("settings.currencyCount", {
+                  count: CURRENCY_OPTIONS.length,
+                })}
+              </p>
             </div>
           )}
 

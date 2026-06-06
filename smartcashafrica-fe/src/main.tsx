@@ -5,6 +5,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { AppDataProvider } from "@/context/AppDataContext";
 import { I18nProvider } from "@/context/I18nContext";
 import { ToastProvider } from "@/context/ToastContext";
+import { AddTransactionProvider } from "@/context/AddTransactionContext";
 import App from "./App";
 import "./index.css";
 
@@ -15,7 +16,9 @@ createRoot(document.getElementById("root")!).render(
         <AppDataProvider>
           <I18nProvider>
             <ToastProvider>
-              <App />
+              <AddTransactionProvider>
+                <App />
+              </AddTransactionProvider>
             </ToastProvider>
           </I18nProvider>
         </AppDataProvider>

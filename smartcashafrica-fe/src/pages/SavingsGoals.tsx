@@ -8,11 +8,10 @@ import { useAppData } from "@/context/AppDataContext";
 import { useTranslation } from "@/context/I18nContext";
 import { savingsAiRecommendations } from "@/lib/mock-data";
 import { translateSavingsTip } from "@/lib/i18n/helpers";
-import { formatCurrency } from "@/lib/utils";
 
 export function SavingsGoals() {
   const { savingsGoals } = useAppData();
-  const { t, intlLocale } = useTranslation();
+  const { t, formatMoney } = useTranslation();
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -58,11 +57,7 @@ export function SavingsGoals() {
                       </h3>
                       <p className="mt-1 text-sm text-muted">
                         {t("savings.targetLabel", {
-                          amount: formatCurrency(
-                            goal.target,
-                            "FCFA",
-                            intlLocale,
-                          ),
+                          amount: formatMoney(goal.target),
                         })}
                       </p>
                     </div>
@@ -83,7 +78,7 @@ export function SavingsGoals() {
                           {t("common.saved")}
                         </p>
                         <p className="text-lg font-bold text-primary">
-                          {formatCurrency(goal.current, "FCFA", intlLocale)}
+                          {formatMoney(goal.current)}
                         </p>
                       </div>
                       {goal.monthlyContribution != null && (
@@ -92,11 +87,7 @@ export function SavingsGoals() {
                             {t("savings.monthlyContrib")}
                           </p>
                           <p className="text-sm font-medium text-navy">
-                            {formatCurrency(
-                              goal.monthlyContribution,
-                              "FCFA",
-                              intlLocale,
-                            )}
+                            {formatMoney(goal.monthlyContribution)}
                           </p>
                         </div>
                       )}
@@ -149,11 +140,7 @@ export function SavingsGoals() {
                   {t("savings.suggestedMonthly")}
                 </p>
                 <p className="mt-1 text-2xl font-bold text-primary">
-                  {formatCurrency(
-                    savingsAiRecommendations.suggestedMonthly,
-                    "FCFA",
-                    intlLocale,
-                  )}
+                  {formatMoney(savingsAiRecommendations.suggestedMonthly)}
                 </p>
               </div>
               <div className="rounded-xl bg-card p-4">

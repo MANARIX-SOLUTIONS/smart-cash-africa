@@ -65,6 +65,7 @@ export interface UserProfile {
 
 export interface AppPreferences {
   language: string;
+  currency: string;
   notificationPrefs: Record<string, boolean>;
 }
 

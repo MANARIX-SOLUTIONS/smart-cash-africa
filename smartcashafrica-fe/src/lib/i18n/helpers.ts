@@ -1,3 +1,5 @@
+import { pluralize, type Locale } from './index';
+
 const CATEGORY_KEYS: Record<string, string> = {
   Food: 'transactions.categories.food',
   Transport: 'transactions.categories.transport',
@@ -74,6 +76,25 @@ const MONTH_KEYS: Record<string, string> = {
   Apr: 'months.apr',
   May: 'months.may',
   Jun: 'months.jun',
+  Jul: 'months.jul',
+  Aug: 'months.aug',
+  Sep: 'months.sep',
+  Oct: 'months.oct',
+  Nov: 'months.nov',
+  Dec: 'months.dec',
+};
+
+const REPORT_PERIOD_KEYS: Record<string, string> = {
+  'June 2026': 'reports.periods.june2026',
+  'Juin 2026': 'reports.periods.june2026',
+  'Q2 2026': 'reports.periods.q22026',
+  'T2 2026': 'reports.periods.q22026',
+};
+
+const EXPORT_FORMAT_KEYS: Record<string, string> = {
+  PDF: 'reports.formats.pdf',
+  Excel: 'reports.formats.excel',
+  CSV: 'reports.formats.csv',
 };
 
 const ACCOUNT_TYPE_KEYS: Record<string, string> = {
@@ -94,7 +115,10 @@ const SEED_ACCOUNT_ACTIVITY: Record<
   },
   '2': { key: 'accounts.activity.airtime', params: { days: 1 } },
   '3': { key: 'accounts.activity.transferReceived', params: { hours: 3 } },
-  '4': { key: 'accounts.activity.paymentTo', params: { merchant: 'SONABEL', hours: 6 } },
+  '4': {
+    key: 'accounts.activity.paymentTo',
+    params: { merchant: 'SONABEL', hours: 6 },
+  },
   '5': { key: 'accounts.activity.transferReceived', params: { hours: 2 } },
   '6': { key: 'accounts.activity.salaryDeposit', params: { days: 3 } },
   '7': { key: 'accounts.activity.transferReceived', params: { hours: 24 } },
@@ -175,6 +199,7 @@ export function resolveNotificationMessage(
 
 export function resolveNotificationTime(
   t: TranslateFn,
+  locale: Locale,
   notif: {
     id: string;
     time: string;
@@ -184,7 +209,28 @@ export function resolveNotificationTime(
 ): string {
   if (notif.timeKey) return t(notif.timeKey, notif.params);
   const seed = NOTIFICATION_TIME_BY_ID[notif.id];
-  if (seed) return t(seed.key, seed.params);
+  if (seed) {
+    const count = seed.params.count;
+    if (seed.key === 'notifications.time.hoursAgo') {
+      return t(
+        pluralize(locale, count, {
+          one: 'notifications.time.hoursAgo_one',
+          other: 'notifications.time.hoursAgo_other',
+        }),
+        seed.params,
+      );
+    }
+    if (seed.key === 'notifications.time.daysAgo') {
+      return t(
+        pluralize(locale, count, {
+          one: 'notifications.time.daysAgo_one',
+          other: 'notifications.time.daysAgo_other',
+        }),
+        seed.params,
+      );
+    }
+    return t(seed.key, seed.params);
+  }
   if (notif.time === 'Just now') return t('notifications.time.justNow');
   return notif.time;
 }
@@ -271,7 +317,31 @@ export function translateAccountActivity(
   if (account.lastActivity === 'Synced · Just now') {
     return t('accounts.activity.synced');
   }
+  if (account.lastActivity === 'Created · Just now') {
+    return t('accounts.activity.created');
+  }
   return account.lastActivity;
+}
+
+export function translateReportPeriod(t: TranslateFn, period: string): string {
+  const key = REPORT_PERIOD_KEYS[period];
+  return key ? t(key) : period;
+}
+
+export function translateExportFormat(t: TranslateFn, format: string): string {
+  const key = EXPORT_FORMAT_KEYS[format];
+  return key ? t(key) : format;
+}
+
+export function getExportCsvHeaders(t: TranslateFn): string[] {
+  return [
+    t('export.headers.date'),
+    t('export.headers.description'),
+    t('export.headers.category'),
+    t('export.headers.account'),
+    t('export.headers.amount'),
+    t('export.headers.status'),
+  ];
 }
 
 export function translateHealthRecommendation(

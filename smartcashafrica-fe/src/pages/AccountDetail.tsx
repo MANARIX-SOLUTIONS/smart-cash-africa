@@ -15,7 +15,7 @@ import {
   translateAccountType,
   translateCategory,
 } from "@/lib/i18n/helpers";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { NotFound } from "@/pages/NotFound";
 
 export function AccountDetail() {
@@ -27,7 +27,7 @@ export function AccountDetail() {
     renameAccount,
   } = useAppData();
   const { toast } = useToast();
-  const { t, intlLocale } = useTranslation();
+  const { t, formatMoney } = useTranslation();
   const [syncing, setSyncing] = useState(false);
   const [renameOpen, setRenameOpen] = useState(false);
 
@@ -105,7 +105,7 @@ export function AccountDetail() {
             </div>
             <div>
               <p className="text-4xl font-bold text-navy">
-                {formatCurrency(account.balance, "FCFA", intlLocale)}
+                {formatMoney(account.balance)}
               </p>
               <p className="mt-1 text-sm text-muted">
                 {translateAccountActivity(t, account)}
@@ -121,7 +121,7 @@ export function AccountDetail() {
           <Card key={stat.label} padding="md">
             <p className="text-sm text-muted">{stat.label}</p>
             <p className="mt-1 text-xl font-bold text-navy">
-              {formatCurrency(stat.value, "FCFA", intlLocale)}
+              {formatMoney(stat.value)}
             </p>
           </Card>
         ))}
@@ -171,7 +171,7 @@ export function AccountDetail() {
                   )}
                 >
                   {tx.amount >= 0 ? "+" : ""}
-                  {formatCurrency(Math.abs(tx.amount), "FCFA", intlLocale)}
+                  {formatMoney(Math.abs(tx.amount))}
                 </span>
               </Link>
             ))

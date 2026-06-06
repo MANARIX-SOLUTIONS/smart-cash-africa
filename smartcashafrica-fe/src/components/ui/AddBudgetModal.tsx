@@ -114,7 +114,7 @@ export function AddBudgetModal({ open, onClose }: AddBudgetModalProps) {
             <Input
               label={t("budgets.allocatedAmount")}
               type="number"
-              placeholder="300000"
+              placeholder={t("common.placeholders.budgetExample")}
               value={allocated}
               onChange={(e) => setAllocated(e.target.value)}
               min="1"

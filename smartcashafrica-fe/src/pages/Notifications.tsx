@@ -43,7 +43,7 @@ export function Notifications() {
     unreadCount,
   } = useAppData();
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const groups = [...new Set(notifications.map((n) => n.group))];
 
   const handleMarkAll = () => {
@@ -135,7 +135,7 @@ export function Notifications() {
                             </p>
                           </div>
                           <span className="shrink-0 text-xs text-muted">
-                            {resolveNotificationTime(t, notif)}
+                            {resolveNotificationTime(t, locale, notif)}
                           </span>
                         </div>
                       </Card>

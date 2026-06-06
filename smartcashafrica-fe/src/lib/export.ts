@@ -3,15 +3,8 @@ import type { Transaction } from '@/types/finance';
 export function downloadTransactionsCsv(
   transactions: Transaction[],
   filename = 'smartcash-transactions.csv',
+  headers = ['Date', 'Description', 'Category', 'Account', 'Amount', 'Status'],
 ) {
-  const headers = [
-    'Date',
-    'Description',
-    'Category',
-    'Account',
-    'Amount',
-    'Status',
-  ];
   const rows = transactions.map((tx) => [
     tx.date,
     tx.description,
