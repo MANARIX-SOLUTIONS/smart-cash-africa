@@ -17,7 +17,7 @@ export function NewSavingsGoal() {
   const navigate = useNavigate();
   const { addSavingsGoal } = useAppData();
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t, currencySymbol } = useTranslation();
   const [name, setName] = useState("");
   const [target, setTarget] = useState("");
   const [monthly, setMonthly] = useState("");
@@ -84,7 +84,7 @@ export function NewSavingsGoal() {
           />
 
           <Input
-            label={t("savings.targetAmount")}
+            label={t("savings.targetAmount", { symbol: currencySymbol })}
             type="number"
             placeholder="2000000"
             value={target}
@@ -93,7 +93,9 @@ export function NewSavingsGoal() {
           />
 
           <Input
-            label={t("savings.monthlyContribution")}
+            label={t("savings.monthlyContribution", {
+              symbol: currencySymbol,
+            })}
             type="number"
             placeholder="50000"
             value={monthly}

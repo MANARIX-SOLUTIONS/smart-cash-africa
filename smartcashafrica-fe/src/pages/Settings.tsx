@@ -15,6 +15,7 @@ import {
   Check,
   LogOut,
   ShieldCheck,
+  Search,
 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -32,7 +33,9 @@ import {
   CURRENCY_GROUPS,
   CURRENCY_OPTIONS,
   getCurrenciesByGroup,
+  type CurrencyDefinition,
 } from "@/lib/currencies";
+import { AccountProviderLogo } from "@/components/ui/ProviderLogo";
 import { cn } from "@/lib/utils";
 
 const sectionIds = [
@@ -97,6 +100,23 @@ export function Settings() {
   const { toast } = useToast();
   const { t, formatMoney, setLocale, setCurrency, currency } = useTranslation();
   const navigate = useNavigate();
+  const [currencyQuery, setCurrencyQuery] = useState("");
+
+  const filteredCurrencies = useMemo(() => {
+    const query = currencyQuery.trim().toLowerCase();
+    if (!query) return null;
+
+    return CURRENCY_OPTIONS.filter((option) => {
+      const label = t(`settings.currencies.${option.code}`).toLowerCase();
+      const region = t(option.regionKey).toLowerCase();
+      return (
+        option.code.toLowerCase().includes(query) ||
+        option.symbol.toLowerCase().includes(query) ||
+        label.includes(query) ||
+        region.includes(query)
+      );
+    });
+  }, [currencyQuery, t]);
 
   const sections = useMemo(
     () =>
@@ -299,12 +319,7 @@ export function Settings() {
                     className="flex items-center justify-between rounded-xl border border-border p-4"
                   >
                     <div className="flex items-center gap-3">
-                      <div
-                        className="flex h-10 w-10 items-center justify-center rounded-xl text-xs font-bold text-white"
-                        style={{ backgroundColor: account.color }}
-                      >
-                        {account.initials}
-                      </div>
+                      <AccountProviderLogo account={account} size="md" />
                       <div>
                         <p className="font-medium text-navy">
                           {account.provider}
@@ -428,66 +443,88 @@ export function Settings() {
                   {t("settings.currencyDesc")}
                 </p>
               </div>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+                <input
+                  type="search"
+                  value={currencyQuery}
+                  onChange={(e) => setCurrencyQuery(e.target.value)}
+                  placeholder={t("settings.currencySearch")}
+                  className={cn(
+                    "h-11 w-full rounded-xl border border-border bg-surface",
+                    "pl-10 pr-4 text-sm text-navy outline-none",
+                    "placeholder:text-muted focus:border-primary focus:ring-2",
+                    "focus:ring-ring",
+                  )}
+                />
+              </div>
               <div className="max-h-[65vh] space-y-6 overflow-y-auto pr-1">
-                {CURRENCY_GROUPS.map((group) => {
-                  const groupKey = `settings.currencyGroups.${group}`;
-                  const options = getCurrenciesByGroup(groupKey);
-                  if (options.length === 0) return null;
+                {filteredCurrencies ? (
+                  filteredCurrencies.length === 0 ? (
+                    <p className="py-8 text-center text-sm text-muted">
+                      {t("settings.currencyNoResults", {
+                        query: currencyQuery.trim(),
+                      })}
+                    </p>
+                  ) : (
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {filteredCurrencies.map((option) => (
+                        <CurrencyOptionButton
+                          key={option.code}
+                          option={option}
+                          isSelected={currency === option.code}
+                          onSelect={() => {
+                            setCurrency(option.code);
+                            toast(
+                              t("settings.currencySet", {
+                                currency: t(
+                                  `settings.currencies.${option.code}`,
+                                ),
+                              }),
+                              "success",
+                            );
+                          }}
+                          t={t}
+                        />
+                      ))}
+                    </div>
+                  )
+                ) : (
+                  CURRENCY_GROUPS.map((group) => {
+                    const groupKey = `settings.currencyGroups.${group}`;
+                    const options = getCurrenciesByGroup(groupKey);
+                    if (options.length === 0) return null;
 
-                  return (
-                    <section key={group}>
-                      <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted">
-                        {t(groupKey)}
-                      </h3>
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        {options.map((option) => (
-                          <button
-                            key={option.code}
-                            type="button"
-                            onClick={() => {
-                              setCurrency(option.code);
-                              toast(
-                                t("settings.currencySet", {
-                                  currency: t(
-                                    `settings.currencies.${option.code}`,
-                                  ),
-                                }),
-                                "success",
-                              );
-                            }}
-                            className={cn(
-                              "flex items-center gap-4 rounded-xl border p-4 text-left",
-                              "transition-all",
-                              currency === option.code
-                                ? "border-primary bg-primary-light ring-2 ring-ring"
-                                : "border-border hover:border-primary/30 hover:bg-surface/50",
-                            )}
-                          >
-                            <div
-                              className={cn(
-                                "flex h-12 w-12 shrink-0 items-center justify-center",
-                                "rounded-xl bg-surface text-xs font-bold text-navy",
-                              )}
-                            >
-                              {option.symbol}
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <p className="font-semibold text-navy">
-                                {t(`settings.currencies.${option.code}`)}
-                              </p>
-                              <p className="text-xs text-muted">
-                                {option.code} · {t(option.regionKey)}
-                              </p>
-                            </div>
-                            {currency === option.code && (
-                              <Check className="h-5 w-5 shrink-0 text-primary" />
-                            )}
-                          </button>
-                        ))}
-                      </div>
-                    </section>
-                  );
-                })}
+                    return (
+                      <section key={group}>
+                        <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted">
+                          {t(groupKey)}
+                        </h3>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          {options.map((option) => (
+                            <CurrencyOptionButton
+                              key={option.code}
+                              option={option}
+                              isSelected={currency === option.code}
+                              onSelect={() => {
+                                setCurrency(option.code);
+                                toast(
+                                  t("settings.currencySet", {
+                                    currency: t(
+                                      `settings.currencies.${option.code}`,
+                                    ),
+                                  }),
+                                  "success",
+                                );
+                              }}
+                              t={t}
+                            />
+                          ))}
+                        </div>
+                      </section>
+                    );
+                  })
+                )}
               </div>
               <p className="text-xs text-muted">
                 {t("settings.currencyCount", {
@@ -613,5 +650,49 @@ export function Settings() {
         </Card>
       </div>
     </div>
+  );
+}
+
+function CurrencyOptionButton({
+  option,
+  isSelected,
+  onSelect,
+  t,
+}: {
+  option: CurrencyDefinition;
+  isSelected: boolean;
+  onSelect: () => void;
+  t: (key: string, params?: Record<string, string | number>) => string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={cn(
+        "flex items-center gap-4 rounded-xl border p-4 text-left",
+        "transition-all",
+        isSelected
+          ? "border-primary bg-primary-light ring-2 ring-ring"
+          : "border-border hover:border-primary/30 hover:bg-surface/50",
+      )}
+    >
+      <div
+        className={cn(
+          "flex h-12 w-12 shrink-0 items-center justify-center",
+          "rounded-xl bg-surface text-xs font-bold text-navy",
+        )}
+      >
+        {option.symbol}
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="font-semibold text-navy">
+          {t(`settings.currencies.${option.code}`)}
+        </p>
+        <p className="text-xs text-muted">
+          {option.code} · {t(option.regionKey)}
+        </p>
+      </div>
+      {isSelected && <Check className="h-5 w-5 shrink-0 text-primary" />}
+    </button>
   );
 }

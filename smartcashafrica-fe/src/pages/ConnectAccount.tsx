@@ -20,6 +20,7 @@ import {
 } from "@/lib/providers";
 import { translateAccountType } from "@/lib/i18n/helpers";
 import type { AccountType } from "@/types/finance";
+import { ProviderLogo } from "@/components/ui/ProviderLogo";
 import { cn } from "@/lib/utils";
 
 type AccountMode = "connect" | "create";
@@ -46,7 +47,7 @@ export function ConnectAccount() {
 
   const { connectAccount, createAccount } = useAppData();
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t, currencySymbol } = useTranslation();
 
   const [mode, setMode] = useState<AccountMode>(initialMode);
   const [step, setStep] = useState(1);
@@ -198,12 +199,7 @@ export function ConnectAccount() {
                               : "border-border hover:border-primary/30",
                           )}
                         >
-                          <div
-                            className="flex h-11 w-11 items-center justify-center rounded-xl text-xs font-bold text-white"
-                            style={{ backgroundColor: p.color }}
-                          >
-                            {p.initials}
-                          </div>
+                          <ProviderLogo provider={p} size="md" />
                           <div className="flex-1">
                             <span className="block font-medium text-navy">
                               {p.name}
@@ -233,9 +229,14 @@ export function ConnectAccount() {
 
           {step === 2 && provider && (
             <Card>
-              <h3 className="text-lg font-semibold text-navy">
-                {t("accounts.connectProvider", { name: provider.name })}
-              </h3>
+              <div className="flex items-center gap-3">
+                <ProviderLogo provider={provider} size="lg" />
+                <div>
+                  <h3 className="text-lg font-semibold text-navy">
+                    {t("accounts.connectProvider", { name: provider.name })}
+                  </h3>
+                </div>
+              </div>
               <p className="mt-1 text-sm text-muted">
                 {t("accounts.connectDetails")}
               </p>
@@ -319,7 +320,7 @@ export function ConnectAccount() {
             </div>
 
             <Input
-              label={t("accounts.initialBalance")}
+              label={t("accounts.initialBalance", { symbol: currencySymbol })}
               type="number"
               min="0"
               step="1"

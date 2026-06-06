@@ -35,6 +35,8 @@ interface I18nContextValue {
   ) => string;
   formatNumber: (value: number, options?: Intl.NumberFormatOptions) => string;
   formatMoney: (amount: number) => string;
+  currencySymbol: string;
+  amountLabel: string;
 }
 
 const I18nContext = createContext<I18nContextValue | null>(null);
@@ -95,6 +97,11 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     [currencyDef, intlLocale],
   );
 
+  const currencySymbol = currencyDef.symbol;
+  const amountLabel = t("transactions.amountLabel", {
+    symbol: currencySymbol,
+  });
+
   const value = useMemo(
     () => ({
       locale,
@@ -107,6 +114,8 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
       formatDate,
       formatNumber,
       formatMoney,
+      currencySymbol,
+      amountLabel,
     }),
     [
       locale,
@@ -119,6 +128,8 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
       formatDate,
       formatNumber,
       formatMoney,
+      currencySymbol,
+      amountLabel,
     ],
   );
 

@@ -12,7 +12,10 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { useAppData } from "@/context/AppDataContext";
 import { useTranslation } from "@/context/I18nContext";
+import { AccountProviderLogo } from "@/components/ui/ProviderLogo";
+import { findAccountForProvider } from "@/lib/account-helpers";
 import { translateCategory, translateStatus } from "@/lib/i18n/helpers";
 import type { Transaction } from "@/types/finance";
 import { cn } from "@/lib/utils";
@@ -32,6 +35,7 @@ export function TransactionDetailDrawer({
   transaction,
   onClose,
 }: TransactionDetailDrawerProps) {
+  const { accounts } = useAppData();
   const { t, formatMoney, intlLocale } = useTranslation();
 
   useEffect(() => {
@@ -51,6 +55,7 @@ export function TransactionDetailDrawer({
 
   const isIncome = transaction.amount >= 0;
   const merchant = transaction.description.split(" — ")[0];
+  const account = findAccountForProvider(accounts, transaction.account);
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
@@ -85,6 +90,11 @@ export function TransactionDetailDrawer({
 
         <div className="flex-1 overflow-y-auto p-6">
           <div className="text-center">
+            {account && (
+              <div className="mb-4 flex justify-center">
+                <AccountProviderLogo account={account} size="lg" />
+              </div>
+            )}
             <p
               className={cn(
                 "text-3xl font-bold",
@@ -110,6 +120,7 @@ export function TransactionDetailDrawer({
               icon={Wallet}
               label={t("common.provider")}
               value={transaction.account}
+              account={account}
             />
             <DetailRow
               icon={Calendar}
@@ -166,14 +177,25 @@ function DetailRow({
   icon: Icon,
   label,
   value,
+  account,
 }: {
   icon: typeof Tag;
   label: string;
   value: string;
+  account?: {
+    provider: string;
+    providerId?: string;
+    color: string;
+    initials: string;
+  };
 }) {
   return (
     <div className="flex items-start gap-3 rounded-xl bg-surface p-3">
-      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-muted" />
+      {account ? (
+        <AccountProviderLogo account={account} size="sm" />
+      ) : (
+        <Icon className="mt-0.5 h-4 w-4 shrink-0 text-muted" />
+      )}
       <div>
         <p className="text-xs font-medium uppercase tracking-wide text-muted">
           {label}

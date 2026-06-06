@@ -17,7 +17,7 @@ interface AddBudgetModalProps {
 export function AddBudgetModal({ open, onClose }: AddBudgetModalProps) {
   const { budgets, addBudget } = useAppData();
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t, currencySymbol } = useTranslation();
   const [category, setCategory] = useState("");
   const [allocated, setAllocated] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -112,7 +112,9 @@ export function AddBudgetModal({ open, onClose }: AddBudgetModalProps) {
             </div>
 
             <Input
-              label={t("budgets.allocatedAmount")}
+              label={t("budgets.allocatedAmount", {
+                symbol: currencySymbol,
+              })}
               type="number"
               placeholder={t("common.placeholders.budgetExample")}
               value={allocated}

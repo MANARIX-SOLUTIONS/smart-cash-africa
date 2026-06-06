@@ -15,6 +15,7 @@ import {
   translateAccountType,
   translateCategory,
 } from "@/lib/i18n/helpers";
+import { AccountProviderLogo } from "@/components/ui/ProviderLogo";
 import { cn } from "@/lib/utils";
 import { NotFound } from "@/pages/NotFound";
 
@@ -97,12 +98,11 @@ export function AccountDetail() {
         />
         <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
-            <div
-              className="flex h-16 w-16 items-center justify-center rounded-2xl text-lg font-bold text-white"
-              style={{ backgroundColor: account.color }}
-            >
-              {account.initials}
-            </div>
+            <AccountProviderLogo
+              account={account}
+              size="lg"
+              className="h-16 w-16 rounded-2xl"
+            />
             <div>
               <p className="text-4xl font-bold text-navy">
                 {formatMoney(account.balance)}

@@ -116,6 +116,8 @@ const overrides: Record<string, unknown> = {
     supportedProviders: 'Mobile money yi ñu supporté',
   },
   dashboard: {
+    linkedAccounts: 'Comptes yi ñu bokk',
+    addFirstTransaction: 'Duggal sa transaction bu jëkk',
     overview: 'Lii mooy sa xayma bu xaalis.',
     healthStatus: 'Sa xaalis dafa baax.',
     askAdvisor: 'Laaj Conseiller IA bi',
@@ -161,6 +163,8 @@ const overrides: Record<string, unknown> = {
       'Tann devise bi ngir wone soldes, budgets ak transactions yi.',
     currencySet: 'Devise bi taxaw na ci {currency}',
     currencyCount: '{count} devise yu Afrik ñu man a tann',
+    currencySearch: 'Seet devise...',
+    currencyNoResults: 'Amul devise bu méngoo ak « {query} »',
     currencyGroups: {
       westAfrica: "Afrique de l'Ouest",
       centralAfrica: 'Afrique centrale',

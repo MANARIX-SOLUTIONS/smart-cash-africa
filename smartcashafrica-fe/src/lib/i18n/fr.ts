@@ -184,7 +184,7 @@ export const fr: Messages = {
     goalsTitle: 'Définissez vos objectifs financiers',
     goalsSubtitle:
       'Aidez-nous à personnaliser votre tableau de bord et les conseils IA.',
-    monthlyIncome: 'Revenu mensuel estimé (FCFA)',
+    monthlyIncome: 'Revenu mensuel estimé ({symbol})',
     savingsTarget: "Objectif d'épargne (% du revenu)",
     allSetTitle: 'Vous êtes prêt !',
     allSetSubtitle:
@@ -211,6 +211,8 @@ export const fr: Messages = {
     monthlySpendingSub: 'Tendance des dépenses sur 6 mois',
     recentTransactions: 'Transactions récentes',
     latestActivity: 'Dernière activité',
+    linkedAccounts: 'Comptes connectés',
+    addFirstTransaction: 'Enregistrer votre première transaction',
     aiInsight: 'Insight IA',
     aiInsights: 'Insights IA',
     aiInsightsSub: 'Recommandations personnalisées pour vous',
@@ -248,7 +250,7 @@ export const fr: Messages = {
     accountName: 'Nom du compte',
     accountNamePlaceholder: 'ex. Épargne famille, Caisse petite monnaie',
     accountType: 'Type de compte',
-    initialBalance: 'Solde initial (FCFA)',
+    initialBalance: 'Solde initial ({symbol})',
     initialBalanceHint: 'Montant de départ optionnel',
     createButton: 'Créer le compte',
     created: '{name} créé avec succès',
@@ -404,7 +406,7 @@ export const fr: Messages = {
     weeklySpending: 'Dépenses hebdomadaires',
     topTransactions: 'Principales transactions',
     noCategoryTxns: 'Aucune transaction dans cette catégorie.',
-    allocatedAmount: 'Montant alloué (FCFA)',
+    allocatedAmount: 'Montant alloué ({symbol})',
     createBudget: 'Créer le budget',
     created: 'Budget {category} créé',
     alreadyExists: 'Un budget existe déjà pour cette catégorie',
@@ -421,8 +423,8 @@ export const fr: Messages = {
     icon: 'Icône',
     goalName: "Nom de l'objectif",
     goalPlaceholder: "ex. Fonds d'urgence",
-    targetAmount: 'Montant cible (FCFA)',
-    monthlyContribution: 'Contribution mensuelle (FCFA)',
+    targetAmount: 'Montant cible ({symbol})',
+    monthlyContribution: 'Contribution mensuelle ({symbol})',
     monthlyHint: "Optionnel — l'IA suggérera un montant si laissé vide",
     createGoal: "Créer l'objectif",
     created: 'Objectif « {name} » créé avec succès',
@@ -430,7 +432,7 @@ export const fr: Messages = {
     monthlyContrib: 'Contribution mensuelle',
     stayOnTrack: 'Recommandé pour rester sur la bonne voie',
     addContribution: 'Ajouter une contribution',
-    contribAmount: 'Montant de la contribution (FCFA)',
+    contribAmount: 'Montant de la contribution ({symbol})',
     recentContribs: 'Contributions récentes',
     added: '{amount} ajouté à {name}',
     targetLabel: 'Objectif : {amount}',
@@ -456,7 +458,7 @@ export const fr: Messages = {
       '4': "Envisagez d'allouer 20 % de vos revenus freelance pour accélérer cet objectif.",
     },
     dynamicTip:
-      'Épargnez {amount} FCFA par mois pour atteindre cet objectif à temps.',
+      'Épargnez {amount} par mois pour atteindre cet objectif à temps.',
   },
   health: {
     title: 'Santé financière',
@@ -635,7 +637,7 @@ export const fr: Messages = {
       },
       newGoal: {
         title: "Nouvel objectif d'épargne créé",
-        message: '« {name} » — objectif {target} FCFA',
+        message: '« {name} » — objectif {target}',
       },
     },
     time: {
@@ -699,6 +701,8 @@ export const fr: Messages = {
       'Choisissez la devise pour afficher les soldes, budgets et transactions.',
     currencySet: 'Devise définie sur {currency}',
     currencyCount: '{count} devises africaines disponibles',
+    currencySearch: 'Rechercher une devise...',
+    currencyNoResults: 'Aucune devise ne correspond à « {query} »',
     theme: 'Thème',
     themeDesc:
       'Choisissez l’apparence de SmartCash. Système suit la préférence de votre appareil.',

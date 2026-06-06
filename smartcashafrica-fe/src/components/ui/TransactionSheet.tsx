@@ -7,6 +7,7 @@ import { useToast } from "@/context/ToastContext";
 import { useAppData } from "@/context/AppDataContext";
 import { useTranslation } from "@/context/I18nContext";
 import { getAccountDisplayName } from "@/lib/account-helpers";
+import { AccountProviderLogo } from "@/components/ui/ProviderLogo";
 import { getCurrencyDefinition } from "@/lib/currencies";
 import { translateCategory } from "@/lib/i18n/helpers";
 import {
@@ -316,16 +317,7 @@ export function AddTransactionSheet({
                             : "border-border hover:border-primary/30",
                         )}
                       >
-                        <div
-                          className={cn(
-                            "flex h-10 w-10 shrink-0 items-center",
-                            "justify-center rounded-xl text-sm font-bold",
-                            "text-white",
-                          )}
-                          style={{ backgroundColor: a.color }}
-                        >
-                          {a.initials}
-                        </div>
+                        <AccountProviderLogo account={a} size="md" />
                         <div className="min-w-0 flex-1">
                           <p className="truncate font-medium text-navy">
                             {getAccountDisplayName(a)}

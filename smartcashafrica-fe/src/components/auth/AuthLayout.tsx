@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Shield, TrendingUp, Bot } from "lucide-react";
 import { useTranslation } from "@/context/I18nContext";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
+import { ProviderLogo } from "@/components/ui/ProviderLogo";
 import { mobileMoneyProviders } from "@/lib/providers";
 import { lpLinks } from "@/lib/links";
 
@@ -94,12 +95,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
                   key={p.id}
                   className="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-1.5"
                 >
-                  <div
-                    className="flex h-6 w-6 items-center justify-center rounded-md text-[10px] font-bold text-white"
-                    style={{ backgroundColor: p.color }}
-                  >
-                    {p.initials}
-                  </div>
+                  <ProviderLogo provider={p} size="sm" />
                   <span className="text-xs text-white/80">{p.name}</span>
                 </div>
               ))}

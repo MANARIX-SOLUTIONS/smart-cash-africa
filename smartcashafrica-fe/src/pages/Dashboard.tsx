@@ -11,6 +11,7 @@ import {
   Calendar,
   Search,
   CheckCircle2,
+  Plus,
 } from "lucide-react";
 import {
   PieChart,
@@ -36,9 +37,12 @@ import {
   categorySpending,
   aiInsights,
 } from "@/lib/mock-data";
+import { AccountProviderLogo } from "@/components/ui/ProviderLogo";
 import { useAuth } from "@/context/AuthContext";
 import { useAppData } from "@/context/AppDataContext";
+import { useAddTransaction } from "@/context/AddTransactionContext";
 import { useTranslation } from "@/context/I18nContext";
+import { findAccountForProvider } from "@/lib/account-helpers";
 import { useChartTheme } from "@/hooks/useChartTheme";
 import {
   translateCashDist,
@@ -64,12 +68,13 @@ const priorityVariant = {
 
 export function Dashboard() {
   const { user } = useAuth();
-  const { transactions } = useAppData();
-  const { t, greeting, formatMoney, intlLocale } = useTranslation();
+  const { transactions, accounts } = useAppData();
+  const { openAddTransaction } = useAddTransaction();
+  const { t, greeting, formatMoney, formatDate } = useTranslation();
   const [txnSearch, setTxnSearch] = useState("");
   const chart = useChartTheme();
   const firstName = user?.name.split(" ")[0] ?? "there";
-  const today = new Date().toLocaleDateString(intlLocale, {
+  const today = formatDate(new Date(), {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -108,12 +113,18 @@ export function Dashboard() {
               </p>
             </div>
           </div>
-          <Link to="/advisor">
-            <Button variant="outline" size="sm">
-              <Sparkles className="h-4 w-4 text-primary" />
-              {t("dashboard.askAdvisor")}
+          <div className="flex flex-wrap gap-2">
+            <Button size="sm" onClick={() => openAddTransaction("expense")}>
+              <Plus className="h-4 w-4" />
+              {t("transactions.add")}
             </Button>
-          </Link>
+            <Link to="/advisor">
+              <Button variant="outline" size="sm">
+                <Sparkles className="h-4 w-4 text-primary" />
+                {t("dashboard.askAdvisor")}
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -152,17 +163,10 @@ export function Dashboard() {
                     {card.id === "health-score" ? "/100" : "%"}
                   </>
                 ) : (
-                  <>
-                    <AnimatedNumber
-                      value={card.value}
-                      formatter={(v) =>
-                        new Intl.NumberFormat(intlLocale, {
-                          maximumFractionDigits: 0,
-                        }).format(v)
-                      }
-                    />{" "}
-                    FCFA
-                  </>
+                  <AnimatedNumber
+                    value={card.value}
+                    formatter={(v) => formatMoney(v)}
+                  />
                 )}
               </p>
               <div className="mt-3">
@@ -175,6 +179,45 @@ export function Dashboard() {
           );
         })}
       </section>
+
+      {accounts.length > 0 && (
+        <section>
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-navy">
+              {t("dashboard.linkedAccounts")}
+            </h3>
+            <Link
+              to="/accounts"
+              className="text-sm font-medium text-primary hover:underline"
+            >
+              {t("common.viewAll")}
+            </Link>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-1">
+            {accounts.slice(0, 6).map((account) => (
+              <Link
+                key={account.id}
+                to={`/accounts/${account.id}`}
+                className={cn(
+                  "flex min-w-[180px] items-center gap-3 rounded-xl",
+                  "border border-border bg-card p-3 transition-all",
+                  "hover:border-primary/30 hover:shadow-[var(--shadow-card)]",
+                )}
+              >
+                <AccountProviderLogo account={account} size="md" />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-navy">
+                    {account.nickname ?? account.provider}
+                  </p>
+                  <p className="text-sm font-semibold text-navy">
+                    {formatMoney(account.balance)}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="grid gap-6 lg:grid-cols-2">
         <Card>
@@ -201,9 +244,7 @@ export function Dashboard() {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value: number) =>
-                    formatMoney(value)
-                  }
+                  formatter={(value: number) => formatMoney(value)}
                   contentStyle={chart.tooltip}
                 />
               </PieChart>
@@ -255,9 +296,7 @@ export function Dashboard() {
                 tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
               />
               <Tooltip
-                formatter={(value: number) =>
-                  formatMoney(value)
-                }
+                formatter={(value: number) => formatMoney(value)}
                 contentStyle={chart.tooltip}
               />
               <Bar dataKey="amount" fill="#00A86B" radius={[6, 6, 0, 0]} />
@@ -300,47 +339,64 @@ export function Dashboard() {
           </div>
           <div className="mt-4 divide-y divide-border">
             {recentTxns.length === 0 ? (
-              <p className="py-8 text-center text-sm text-muted">
-                {t("transactions.empty")}
-              </p>
-            ) : (
-              recentTxns.map((tx) => (
-                <Link
-                  key={tx.id}
-                  to={`/transactions/${tx.id}`}
-                  className="flex items-center justify-between py-3 first:pt-0 transition-colors hover:bg-surface/50 -mx-2 px-2 rounded-lg"
+              <div className="py-8 text-center">
+                <p className="text-sm text-muted">{t("transactions.empty")}</p>
+                <Button
+                  className="mt-4"
+                  size="sm"
+                  onClick={() => openAddTransaction("expense")}
                 >
-                  <div className="flex items-center gap-3">
-                    <div
+                  <Plus className="h-4 w-4" />
+                  {t("dashboard.addFirstTransaction")}
+                </Button>
+              </div>
+            ) : (
+              recentTxns.map((tx) => {
+                const account = findAccountForProvider(accounts, tx.account);
+
+                return (
+                  <Link
+                    key={tx.id}
+                    to={`/transactions/${tx.id}`}
+                    className="flex items-center justify-between py-3 first:pt-0 transition-colors hover:bg-surface/50 -mx-2 px-2 rounded-lg"
+                  >
+                    <div className="flex items-center gap-3">
+                      {account ? (
+                        <AccountProviderLogo account={account} size="md" />
+                      ) : (
+                        <div
+                          className={cn(
+                            "flex h-11 w-11 items-center justify-center",
+                            "rounded-xl text-xs font-bold",
+                            tx.amount >= 0
+                              ? "bg-green-50 text-success dark:bg-green-950"
+                              : "bg-surface text-muted",
+                          )}
+                        >
+                          {tx.category.slice(0, 2).toUpperCase()}
+                        </div>
+                      )}
+                      <div>
+                        <p className="text-sm font-medium text-navy">
+                          {tx.description}
+                        </p>
+                        <p className="text-xs text-muted">
+                          {tx.account} · {translateCategory(t, tx.category)}
+                        </p>
+                      </div>
+                    </div>
+                    <span
                       className={cn(
-                        "flex h-10 w-10 items-center justify-center rounded-xl text-xs font-bold",
-                        tx.amount >= 0
-                          ? "bg-green-50 text-success dark:bg-green-950"
-                          : "bg-surface text-muted",
+                        "text-sm font-semibold",
+                        tx.amount >= 0 ? "text-success" : "text-navy",
                       )}
                     >
-                      {tx.category.slice(0, 2).toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-navy">
-                        {tx.description}
-                      </p>
-                      <p className="text-xs text-muted">
-                        {tx.account} · {translateCategory(t, tx.category)}
-                      </p>
-                    </div>
-                  </div>
-                  <span
-                    className={cn(
-                      "text-sm font-semibold",
-                      tx.amount >= 0 ? "text-success" : "text-navy",
-                    )}
-                  >
-                    {tx.amount >= 0 ? "+" : ""}
-                    {formatMoney(Math.abs(tx.amount))}
-                  </span>
-                </Link>
-              ))
+                      {tx.amount >= 0 ? "+" : ""}
+                      {formatMoney(Math.abs(tx.amount))}
+                    </span>
+                  </Link>
+                );
+              })
             )}
           </div>
         </Card>

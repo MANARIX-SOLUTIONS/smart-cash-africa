@@ -32,6 +32,23 @@ export function getAccountDisplayName(account: Account): string {
   return account.nickname ?? account.provider;
 }
 
+export function findAccountForProvider(
+  accounts: Account[],
+  providerName: string,
+): Account | undefined {
+  const query = providerName.trim().toLowerCase();
+  return accounts.find((account) => {
+    const name = account.provider.toLowerCase();
+    const nickname = account.nickname?.toLowerCase();
+    return (
+      name === query ||
+      nickname === query ||
+      name.includes(query) ||
+      query.includes(name)
+    );
+  });
+}
+
 export function getAccountColor(name: string): string {
   let hash = 0;
   for (let i = 0; i < name.length; i++) {

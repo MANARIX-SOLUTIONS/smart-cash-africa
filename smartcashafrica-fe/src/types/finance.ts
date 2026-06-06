@@ -13,6 +13,7 @@ export interface Transaction {
 export interface Account {
   id: string;
   provider: string;
+  providerId?: string;
   type: string;
   balance: number;
   currency: string;

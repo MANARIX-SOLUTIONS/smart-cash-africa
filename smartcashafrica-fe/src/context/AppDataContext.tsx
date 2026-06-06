@@ -16,9 +16,14 @@ import {
 import { getAccountColor, getAccountInitials } from "@/lib/account-helpers";
 import { colorForCategory } from "@/lib/budget-helpers";
 import { downloadTransactionsCsv } from "@/lib/export";
-import { DEFAULT_CURRENCY, getCurrencyDefinition } from "@/lib/currencies";
+import {
+  DEFAULT_CURRENCY,
+  formatCurrencyAmount,
+  getCurrencyDefinition,
+} from "@/lib/currencies";
 import {
   detectDefaultLocale,
+  getIntlLocale,
   isSenegaleseUser,
   translate,
   type Locale,
@@ -168,6 +173,20 @@ function resolveLanguage(
   }
 
   return { language: detected, languageManual: false };
+}
+
+function formatPreferenceMoney(
+  amount: number,
+  preferences: AppPreferences,
+): string {
+  const locale = isValidLocale(preferences.language)
+    ? preferences.language
+    : "fr";
+  return formatCurrencyAmount(
+    amount,
+    getCurrencyDefinition(preferences.currency),
+    getIntlLocale(locale),
+  );
 }
 
 function loadInitialPreferences(profile: UserProfile): AppPreferences {
@@ -325,6 +344,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       const account: Account = {
         id: crypto.randomUUID(),
         provider: displayName,
+        providerId: provider.id,
         type: provider.type,
         balance: provider.initialBalance ?? 0,
         currency: getCurrencyDefinition(preferences.currency).symbol,
@@ -469,9 +489,11 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         current: 0,
         emoji: input.emoji,
         predictedDate: predictDate(monthly, input.target),
-        aiTip: `Save ${monthly.toLocaleString("fr-FR")} FCFA monthly to reach this goal on time.`,
+        aiTip: "",
         aiTipKey: "savings.dynamicTip",
-        aiTipParams: { amount: monthly.toLocaleString("fr-FR") },
+        aiTipParams: {
+          amount: formatPreferenceMoney(monthly, preferences),
+        },
         monthlyContribution: monthly,
       };
 
@@ -483,7 +505,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
             id: crypto.randomUUID(),
             group: "Savings Milestones",
             title: "New savings goal created",
-            message: `"${goal.name}" — target ${goal.target.toLocaleString("fr-FR")} FCFA`,
+            message: `"${goal.name}" — target ${formatPreferenceMoney(goal.target, preferences)}`,
             time: "Just now",
             type: "success",
             read: false,
@@ -492,7 +514,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
             timeKey: "notifications.time.justNow",
             params: {
               name: goal.name,
-              target: goal.target.toLocaleString("fr-FR"),
+              target: formatPreferenceMoney(goal.target, preferences),
             },
           },
           ...prev.notifications,
@@ -501,7 +523,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
       return goal;
     },
-    [],
+    [preferences],
   );
 
   const addBudget = useCallback(

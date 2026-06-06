@@ -16,6 +16,7 @@ import { RenameAccountDialog } from "@/components/ui/RenameAccountDialog";
 import { useAppData } from "@/context/AppDataContext";
 import { useTranslation } from "@/context/I18nContext";
 import { useToast } from "@/context/ToastContext";
+import { AccountProviderLogo } from "@/components/ui/ProviderLogo";
 import {
   translateAccountActivity,
   translateAccountType,
@@ -94,12 +95,7 @@ export function Accounts() {
             <Card key={account.id} hover className="group">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div
-                    className="flex h-12 w-12 items-center justify-center rounded-xl text-sm font-bold text-white shadow-sm"
-                    style={{ backgroundColor: account.color }}
-                  >
-                    {account.initials}
-                  </div>
+                  <AccountProviderLogo account={account} size="lg" />
                   <div>
                     <p className="font-semibold text-navy">
                       {account.nickname ?? account.provider}

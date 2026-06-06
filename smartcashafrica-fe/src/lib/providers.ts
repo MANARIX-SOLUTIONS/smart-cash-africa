@@ -7,6 +7,7 @@ export interface FinancialProvider {
   initials: string;
   type: string;
   category: ProviderCategory;
+  logo: string;
 }
 
 /** African financial providers — mobile money listed first. */
@@ -14,66 +15,74 @@ export const financialProviders: FinancialProvider[] = [
   {
     id: 'wave',
     name: 'Wave',
-    color: '#2563EB',
+    color: '#00D4FF',
     initials: 'WV',
     type: 'Mobile Money',
     category: 'mobile_money',
+    logo: '/providers/wave.png',
   },
   {
     id: 'orange',
     name: 'Orange Money',
-    color: '#F59E0B',
+    color: '#FF7900',
     initials: 'OM',
     type: 'Mobile Money',
     category: 'mobile_money',
+    logo: '/providers/orange.svg',
   },
   {
     id: 'free',
     name: 'Free Money',
-    color: '#EF4444',
+    color: '#CD1719',
     initials: 'FM',
     type: 'Mobile Money',
     category: 'mobile_money',
+    logo: '/providers/free.svg',
   },
   {
     id: 'mtn',
     name: 'MTN MoMo',
-    color: '#FBBF24',
+    color: '#FFCC00',
     initials: 'MM',
     type: 'Mobile Money',
     category: 'mobile_money',
+    logo: '/providers/mtn.svg',
   },
   {
     id: 'airtel',
     name: 'Airtel Money',
-    color: '#DC2626',
+    color: '#ED1C24',
     initials: 'AM',
     type: 'Mobile Money',
     category: 'mobile_money',
+    logo: '/providers/airtel.svg',
   },
   {
     id: 'cbao',
     name: 'CBAO',
-    color: '#00A86B',
+    color: '#006B3F',
     initials: 'CB',
     type: 'Savings Account',
     category: 'bank',
+    logo: '/providers/cbao.svg',
   },
   {
     id: 'boa',
     name: 'BOA',
-    color: '#0F172A',
+    color: '#1B2A4A',
     initials: 'BO',
     type: 'Current Account',
     category: 'bank',
+    logo: '/providers/boa.svg',
   },
   {
     id: 'ecobank',
     name: 'Ecobank',
-    color: '#22C55E',
+    color: '#00843D',
     initials: 'EB',
     type: 'Savings Account',
     category: 'bank',
+    logo: '/providers/ecobank.svg',
   },
   {
     id: 'cash',
@@ -82,6 +91,7 @@ export const financialProviders: FinancialProvider[] = [
     initials: 'CA',
     type: 'Physical Cash',
     category: 'cash',
+    logo: '/providers/cash.svg',
   },
 ];
 
@@ -105,4 +115,23 @@ export const onboardingProviders = [
 
 export function getProviderById(id: string) {
   return financialProviders.find((p) => p.id === id);
+}
+
+export function getProviderByName(name: string) {
+  const normalized = name.trim().toLowerCase();
+  return financialProviders.find(
+    (p) =>
+      p.name.toLowerCase() === normalized ||
+      normalized.startsWith(p.name.toLowerCase()),
+  );
+}
+
+export function resolveAccountProvider(account: {
+  provider: string;
+  providerId?: string;
+}) {
+  if (account.providerId) {
+    return getProviderById(account.providerId);
+  }
+  return getProviderByName(account.provider);
 }

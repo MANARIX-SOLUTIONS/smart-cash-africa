@@ -17,7 +17,7 @@ export function SavingsGoalDetail() {
   const { id } = useParams();
   const { getSavingsGoalById, addContribution } = useAppData();
   const { toast } = useToast();
-  const { t, formatDate, formatMoney } = useTranslation();
+  const { t, formatDate, formatMoney, currencySymbol } = useTranslation();
   const [amount, setAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const seedContributions = useMemo(
@@ -143,7 +143,7 @@ export function SavingsGoalDetail() {
           <p className="text-sm text-muted">{t("savings.stayOnTrack")}</p>
           <form onSubmit={handleContribution} className="mt-4 space-y-3">
             <Input
-              label={t("savings.contribAmount")}
+              label={t("savings.contribAmount", { symbol: currencySymbol })}
               type="number"
               placeholder="50000"
               value={amount}

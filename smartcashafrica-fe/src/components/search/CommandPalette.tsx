@@ -14,6 +14,7 @@ import {
 import { useAppData } from "@/context/AppDataContext";
 import { useAddTransaction } from "@/context/AddTransactionContext";
 import { useTranslation } from "@/context/I18nContext";
+import { AccountProviderLogo } from "@/components/ui/ProviderLogo";
 import { translateCategory } from "@/lib/i18n/helpers";
 import { cn } from "@/lib/utils";
 
@@ -146,6 +147,7 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
                 <ResultRow
                   key={a.id}
                   icon={Wallet}
+                  leading={<AccountProviderLogo account={a} size="sm" />}
                   label={a.provider}
                   meta={formatMoney(a.balance)}
                   onClick={() => go(`/accounts/${a.id}`)}
@@ -215,11 +217,13 @@ function ResultRow({
   icon: Icon,
   label,
   meta,
+  leading,
   onClick,
 }: {
   icon: typeof Search;
   label: string;
   meta?: string;
+  leading?: React.ReactNode;
   onClick: () => void;
 }) {
   return (
@@ -231,7 +235,7 @@ function ResultRow({
         "text-left transition-colors hover:bg-surface",
       )}
     >
-      <Icon className="h-4 w-4 text-muted" />
+      {leading ?? <Icon className="h-4 w-4 text-muted" />}
       <span className="flex-1 text-sm font-medium text-navy">{label}</span>
       {meta && <span className="text-xs text-muted">{meta}</span>}
     </button>

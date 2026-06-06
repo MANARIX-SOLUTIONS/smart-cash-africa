@@ -19,6 +19,7 @@ import { localeOrderForUser } from "@/lib/i18n";
 import { LOCALE_CONFIG } from "@/lib/i18n/locales";
 import { translateAccountType } from "@/lib/i18n/helpers";
 import type { Locale } from "@/lib/i18n/types";
+import { ProviderLogo } from "@/components/ui/ProviderLogo";
 import { cn } from "@/lib/utils";
 
 const stepKeys = [
@@ -33,7 +34,7 @@ export function Onboarding() {
   const { user, completeOnboarding } = useAuth();
   const { connectAccount, profile } = useAppData();
   const { toast } = useToast();
-  const { t, locale, setLocale } = useTranslation();
+  const { t, locale, setLocale, currencySymbol } = useTranslation();
   const localeOrder = useMemo(() => localeOrderForUser(profile), [profile]);
   const [step, setStep] = useState(0);
   const [selectedProviders, setSelectedProviders] = useState<string[]>([]);
@@ -177,12 +178,7 @@ export function Onboarding() {
                         : "border-border hover:border-primary/30",
                     )}
                   >
-                    <div
-                      className="flex h-11 w-11 items-center justify-center rounded-xl text-xs font-bold text-white"
-                      style={{ backgroundColor: p.color }}
-                    >
-                      {p.initials}
-                    </div>
+                    <ProviderLogo provider={p} size="md" />
                     <div className="flex-1">
                       <span className="block font-medium text-navy">
                         {p.name}
@@ -226,7 +222,9 @@ export function Onboarding() {
 
             <div className="mt-8 space-y-5">
               <Input
-                label={t("onboarding.monthlyIncome")}
+                label={t("onboarding.monthlyIncome", {
+                  symbol: currencySymbol,
+                })}
                 type="number"
                 placeholder={t("common.placeholders.incomeExample")}
                 value={monthlyIncome}

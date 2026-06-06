@@ -2,12 +2,12 @@ import { Reveal } from "@/components/ui/Reveal";
 import { useTranslation } from "@/context/I18nContext";
 
 const partners = [
-  { name: "Wave", color: "text-orange-600 bg-orange-50" },
-  { name: "Orange Money", color: "text-orange-700 bg-orange-50" },
-  { name: "MTN MoMo", color: "text-yellow-700 bg-yellow-50" },
-  { name: "Ecobank", color: "text-accent bg-accent-light" },
-  { name: "UBA", color: "text-red-700 bg-red-50" },
-  { name: "BOA", color: "text-primary bg-primary-light" },
+  { id: "wave", name: "Wave", logo: "/providers/wave.png" },
+  { id: "orange", name: "Orange Money", logo: "/providers/orange.svg" },
+  { id: "mtn", name: "MTN MoMo", logo: "/providers/mtn.svg" },
+  { id: "ecobank", name: "Ecobank", logo: "/providers/ecobank.svg" },
+  { id: "cbao", name: "CBAO", logo: "/providers/cbao.svg" },
+  { id: "boa", name: "BOA", logo: "/providers/boa.svg" },
 ] as const;
 
 export function PartnerStrip() {
@@ -20,13 +20,21 @@ export function PartnerStrip() {
           <p className="text-center text-sm font-medium text-muted">
             {t("partners.title")}
           </p>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3 lg:gap-4">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-4 lg:gap-6">
             {partners.map((partner) => (
               <div
-                key={partner.name}
-                className={`rounded-xl px-4 py-2.5 text-sm font-semibold ${partner.color}`}
+                key={partner.id}
+                className={[
+                  "flex h-12 min-w-[120px] items-center justify-center",
+                  "rounded-xl border border-border/60 bg-white px-4 py-2",
+                  "shadow-sm",
+                ].join(" ")}
               >
-                {partner.name}
+                <img
+                  src={partner.logo}
+                  alt={partner.name}
+                  className="max-h-8 max-w-[100px] object-contain"
+                />
               </div>
             ))}
           </div>

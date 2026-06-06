@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { BackLink } from "@/components/ui/BackLink";
 import { useAppData } from "@/context/AppDataContext";
+import { AccountProviderLogo } from "@/components/ui/ProviderLogo";
+import { findAccountForProvider } from "@/lib/account-helpers";
 import { useTranslation } from "@/context/I18nContext";
 import { useToast } from "@/context/ToastContext";
 import {
@@ -26,7 +28,7 @@ const statusVariant = {
 
 export function TransactionDetail() {
   const { id } = useParams();
-  const { getTransactionById } = useAppData();
+  const { getTransactionById, accounts } = useAppData();
   const { toast } = useToast();
   const { t, formatMoney, intlLocale } = useTranslation();
   const [note, setNote] = useState("");
@@ -37,6 +39,7 @@ export function TransactionDetail() {
   if (!tx) return <NotFound />;
 
   const isIncome = tx.amount >= 0;
+  const account = findAccountForProvider(accounts, tx.account);
 
   const handleDispute = () => {
     toast(t("transactions.disputeSubmitted"), "info");
@@ -63,7 +66,12 @@ export function TransactionDetail() {
       label: t("common.category"),
       value: translateCategory(t, tx.category),
     },
-    { icon: Wallet, label: t("common.account"), value: tx.account },
+    {
+      icon: Wallet,
+      label: t("common.account"),
+      value: tx.account,
+      logo: account,
+    },
     {
       icon: Calendar,
       label: t("common.date"),
@@ -86,6 +94,11 @@ export function TransactionDetail() {
       <BackLink to="/transactions" label={t("transactions.back")} />
 
       <Card className="text-center">
+        {account && (
+          <div className="mb-4 flex justify-center">
+            <AccountProviderLogo account={account} size="lg" />
+          </div>
+        )}
         <Badge variant={statusVariant[tx.status]}>
           {translateStatus(t, tx.status)}
         </Badge>
@@ -116,10 +129,14 @@ export function TransactionDetail() {
           {t("transactions.details")}
         </h3>
         <dl className="space-y-4">
-          {details.map(({ icon: Icon, label, value }) => (
+          {details.map(({ icon: Icon, label, value, logo }) => (
             <div key={label} className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface">
-                <Icon className="h-4 w-4 text-muted" />
+                {logo ? (
+                  <AccountProviderLogo account={logo} size="sm" />
+                ) : (
+                  <Icon className="h-4 w-4 text-muted" />
+                )}
               </div>
               <div>
                 <dt className="text-xs text-muted">{label}</dt>
