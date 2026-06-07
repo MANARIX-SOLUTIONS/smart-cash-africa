@@ -2,12 +2,42 @@ import { Reveal } from "@/components/ui/Reveal";
 import { useTranslation } from "@/context/I18nContext";
 
 const partners = [
-  { id: "wave", name: "Wave", logo: "/providers/wave.png" },
-  { id: "orange", name: "Orange Money", logo: "/providers/orange.svg" },
-  { id: "mtn", name: "MTN MoMo", logo: "/providers/mtn.svg" },
-  { id: "ecobank", name: "Ecobank", logo: "/providers/ecobank.svg" },
-  { id: "cbao", name: "CBAO", logo: "/providers/cbao.svg" },
-  { id: "boa", name: "BOA", logo: "/providers/boa.svg" },
+  {
+    id: "wave",
+    name: "Wave",
+    logo: "/providers/wave.png",
+    bg: "#00D4FF",
+  },
+  {
+    id: "orange",
+    name: "Orange Money",
+    logo: "/providers/orange.svg",
+    bg: "#FF7900",
+  },
+  {
+    id: "mtn",
+    name: "MTN MoMo",
+    logo: "/providers/mtn.svg",
+    bg: "#FFCC00",
+  },
+  {
+    id: "ecobank",
+    name: "Ecobank",
+    logo: "/providers/ecobank.svg",
+    bg: "#FFFFFF",
+  },
+  {
+    id: "cbao",
+    name: "CBAO",
+    logo: "/providers/cbao.jpg",
+    bg: "#FFFFFF",
+  },
+  {
+    id: "boa",
+    name: "BOA",
+    logo: "/providers/boa.png",
+    bg: "#FFFFFF",
+  },
 ] as const;
 
 export function PartnerStrip() {
@@ -26,9 +56,10 @@ export function PartnerStrip() {
                 key={partner.id}
                 className={[
                   "flex h-12 min-w-[120px] items-center justify-center",
-                  "rounded-xl border border-border/60 bg-white px-4 py-2",
+                  "rounded-xl border border-border/60 px-4 py-2",
                   "shadow-sm",
                 ].join(" ")}
+                style={{ backgroundColor: partner.bg }}
               >
                 <img
                   src={partner.logo}

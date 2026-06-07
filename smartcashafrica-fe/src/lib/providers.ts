@@ -7,7 +7,12 @@ export interface FinancialProvider {
   initials: string;
   type: string;
   category: ProviderCategory;
+  /** Full wordmark — settings, connect flow, wide layouts */
   logo: string;
+  /** Square mark — avatars, lists, command palette */
+  logoIcon?: string;
+  /** Container background behind the logo asset */
+  logoBg?: string;
 }
 
 /** African financial providers — mobile money listed first. */
@@ -20,6 +25,8 @@ export const financialProviders: FinancialProvider[] = [
     type: 'Mobile Money',
     category: 'mobile_money',
     logo: '/providers/wave.png',
+    logoIcon: '/providers/wave-icon.png',
+    logoBg: '#00D4FF',
   },
   {
     id: 'orange',
@@ -29,6 +36,8 @@ export const financialProviders: FinancialProvider[] = [
     type: 'Mobile Money',
     category: 'mobile_money',
     logo: '/providers/orange.svg',
+    logoIcon: '/providers/orange.svg',
+    logoBg: '#FF7900',
   },
   {
     id: 'free',
@@ -38,6 +47,8 @@ export const financialProviders: FinancialProvider[] = [
     type: 'Mobile Money',
     category: 'mobile_money',
     logo: '/providers/free.svg',
+    logoIcon: '/providers/free-icon.svg',
+    logoBg: '#CD1E25',
   },
   {
     id: 'mtn',
@@ -47,6 +58,8 @@ export const financialProviders: FinancialProvider[] = [
     type: 'Mobile Money',
     category: 'mobile_money',
     logo: '/providers/mtn.svg',
+    logoIcon: '/providers/mtn.svg',
+    logoBg: '#FFCC00',
   },
   {
     id: 'airtel',
@@ -56,6 +69,8 @@ export const financialProviders: FinancialProvider[] = [
     type: 'Mobile Money',
     category: 'mobile_money',
     logo: '/providers/airtel.svg',
+    logoIcon: '/providers/airtel-icon.svg',
+    logoBg: '#FFFFFF',
   },
   {
     id: 'cbao',
@@ -64,7 +79,9 @@ export const financialProviders: FinancialProvider[] = [
     initials: 'CB',
     type: 'Savings Account',
     category: 'bank',
-    logo: '/providers/cbao.svg',
+    logo: '/providers/cbao.jpg',
+    logoIcon: '/providers/cbao-icon.png',
+    logoBg: '#FFFFFF',
   },
   {
     id: 'boa',
@@ -73,16 +90,20 @@ export const financialProviders: FinancialProvider[] = [
     initials: 'BO',
     type: 'Current Account',
     category: 'bank',
-    logo: '/providers/boa.svg',
+    logo: '/providers/boa.png',
+    logoIcon: '/providers/boa-icon.png',
+    logoBg: '#FFFFFF',
   },
   {
     id: 'ecobank',
     name: 'Ecobank',
-    color: '#00843D',
+    color: '#00577A',
     initials: 'EB',
     type: 'Savings Account',
     category: 'bank',
     logo: '/providers/ecobank.svg',
+    logoIcon: '/providers/ecobank.svg',
+    logoBg: '#FFFFFF',
   },
   {
     id: 'cash',
@@ -92,6 +113,8 @@ export const financialProviders: FinancialProvider[] = [
     type: 'Physical Cash',
     category: 'cash',
     logo: '/providers/cash.svg',
+    logoIcon: '/providers/cash.svg',
+    logoBg: '#475569',
   },
 ];
 
@@ -134,4 +157,14 @@ export function resolveAccountProvider(account: {
     return getProviderById(account.providerId);
   }
   return getProviderByName(account.provider);
+}
+
+export function getProviderLogoSrc(
+  provider: FinancialProvider,
+  size: 'sm' | 'md' | 'lg' = 'md',
+): string {
+  if (size !== 'lg' && provider.logoIcon) {
+    return provider.logoIcon;
+  }
+  return provider.logo;
 }

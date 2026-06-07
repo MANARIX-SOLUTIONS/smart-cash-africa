@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="CBAO">
+  <rect width="64" height="64" rx="10" fill="#FFFFFF" />
+  <path fill="#F5B335" d="M8 8h48v24H8z" />
+  <path fill="#E30613" d="M8 36h48v20H8z" />
+  <path
+    fill="#111111"
+    d="M8 30h10v3H8zm10 3 8-6h6l-8 6zm14 0 8-6h6l-8 6zm14 0 8-6h6v9H8v-3z"
+  />
+</svg>

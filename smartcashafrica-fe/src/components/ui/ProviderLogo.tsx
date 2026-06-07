@@ -1,21 +1,28 @@
 import {
+  getProviderLogoSrc,
   resolveAccountProvider,
   type FinancialProvider,
-} from "@/lib/providers";
-import { cn } from "@/lib/utils";
+} from '@/lib/providers';
+import { cn } from '@/lib/utils';
 
-type ProviderLogoSize = "sm" | "md" | "lg";
+type ProviderLogoSize = 'sm' | 'md' | 'lg';
 
 const sizeClasses: Record<ProviderLogoSize, string> = {
-  sm: "h-6 w-6 rounded-md",
-  md: "h-11 w-11 rounded-xl",
-  lg: "h-12 w-12 rounded-xl",
+  sm: 'h-6 w-6 rounded-md',
+  md: 'h-11 w-11 rounded-xl',
+  lg: 'h-12 w-12 rounded-xl',
+};
+
+const padClasses: Record<ProviderLogoSize, string> = {
+  sm: 'p-0.5',
+  md: 'p-1',
+  lg: 'p-1.5',
 };
 
 const textClasses: Record<ProviderLogoSize, string> = {
-  sm: "text-[9px]",
-  md: "text-xs",
-  lg: "text-sm",
+  sm: 'text-[9px]',
+  md: 'text-xs',
+  lg: 'text-sm',
 };
 
 interface ProviderLogoProps {
@@ -34,36 +41,39 @@ export function ProviderLogo({
   name,
   color,
   initials,
-  size = "md",
+  size = 'md',
   className,
 }: ProviderLogoProps) {
   const resolved =
     provider ??
     (providerId
-      ? resolveAccountProvider({ provider: name ?? "", providerId })
+      ? resolveAccountProvider({ provider: name ?? '', providerId })
       : name
         ? resolveAccountProvider({ provider: name })
         : null);
 
-  const logo = resolved?.logo;
-  const fallbackColor = resolved?.color ?? color ?? "#64748B";
-  const fallbackInitials = resolved?.initials ?? initials ?? "??";
-  const label = resolved?.name ?? name ?? "Provider";
+  const fallbackColor = resolved?.color ?? color ?? '#64748B';
+  const fallbackInitials = resolved?.initials ?? initials ?? '??';
+  const label = resolved?.name ?? name ?? 'Provider';
 
-  if (logo) {
+  if (resolved) {
+    const src = getProviderLogoSrc(resolved, size);
+    const bg = resolved.logoBg ?? '#FFFFFF';
+
     return (
       <div
         className={cn(
-          "flex shrink-0 items-center justify-center overflow-hidden",
-          "border border-border/60 bg-white shadow-sm",
+          'flex shrink-0 items-center justify-center overflow-hidden',
+          'border border-border/60 shadow-sm',
           sizeClasses[size],
           className,
         )}
+        style={{ backgroundColor: bg }}
       >
         <img
-          src={logo}
+          src={src}
           alt={label}
-          className="h-full w-full object-contain p-1"
+          className={cn('h-full w-full object-contain', padClasses[size])}
         />
       </div>
     );
@@ -72,7 +82,7 @@ export function ProviderLogo({
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center justify-center font-bold text-white",
+        'flex shrink-0 items-center justify-center font-bold text-white',
         sizeClasses[size],
         className,
       )}
@@ -97,7 +107,7 @@ interface AccountProviderLogoProps {
 
 export function AccountProviderLogo({
   account,
-  size = "md",
+  size = 'md',
   className,
 }: AccountProviderLogoProps) {
   const provider = resolveAccountProvider(account);

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Wave">
+  <rect width="64" height="64" rx="14" fill="#00D4FF" />
+  <ellipse cx="32" cy="38" rx="17" ry="19" fill="#111111" />
+  <ellipse cx="32" cy="40" rx="12" ry="14" fill="#FFFFFF" />
+  <circle cx="26" cy="30" r="3" fill="#FFFFFF" />
+  <circle cx="38" cy="30" r="3" fill="#FFFFFF" />
+  <circle cx="26" cy="30" r="1.2" fill="#111111" />
+  <circle cx="38" cy="30" r="1.2" fill="#111111" />
+  <path fill="#FF8C00" d="M32 34l-4 5h8z" />
+  <ellipse cx="22" cy="24" rx="9" ry="11" fill="#111111" transform="rotate(-18 22 24)" />
+  <ellipse cx="46" cy="50" rx="5" ry="3" fill="#FF8C00" />
+  <ellipse cx="38" cy="52" rx="5" ry="3" fill="#FF8C00" />
+</svg>

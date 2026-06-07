@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64" role="img" aria-label="CBAO">
+  <rect x="0" y="8" width="48" height="48" rx="8" fill="#FFFFFF" stroke="#E5E7EB" />
+  <path fill="#F5B335" d="M4 12h40v20H4z" />
+  <path fill="#E30613" d="M4 34h40v18H4z" />
+  <path fill="#111111" d="M4 30h8v2H4zm8 2 6-5h5l-6 5zm11 0 6-5h5l-6 5zm11 0 6-5h5v8H4v-2z" />
+  <text
+    x="60"
+    y="30"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="20"
+    font-weight="800"
+    fill="#111111"
+  >CBAO</text>
+  <text
+    x="60"
+    y="48"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="10"
+    font-weight="600"
+    fill="#E30613"
+  >Groupe Attijariwafa bank</text>
+</svg>
