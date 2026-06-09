@@ -70,14 +70,14 @@ export function AccountDetail() {
         title={account.provider}
         subtitle={translateAccountType(t, account.type)}
         action={
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setRenameOpen(true)}
             >
               <Pencil className="h-4 w-4" />
-              {t("common.rename")}
+              <span className="hidden sm:inline">{t("common.rename")}</span>
             </Button>
             <Button size="sm" disabled={syncing} onClick={handleSync}>
               {syncing ? (
@@ -85,7 +85,7 @@ export function AccountDetail() {
               ) : (
                 <RefreshCw className="h-4 w-4" />
               )}
-              {t("common.sync")}
+              <span className="hidden sm:inline">{t("common.sync")}</span>
             </Button>
           </div>
         }
@@ -104,7 +104,7 @@ export function AccountDetail() {
               className="h-16 w-16 rounded-2xl"
             />
             <div>
-              <p className="text-4xl font-bold text-navy">
+              <p className="text-3xl font-bold text-navy sm:text-4xl">
                 {formatMoney(account.balance)}
               </p>
               <p className="mt-1 text-sm text-muted">
@@ -149,24 +149,24 @@ export function AccountDetail() {
               <Link
                 key={tx.id}
                 to={`/transactions/${tx.id}`}
-                className="flex items-center justify-between py-3 transition-colors hover:bg-surface/50 -mx-2 px-2 rounded-lg"
+                className="flex items-center justify-between gap-3 py-3 transition-colors hover:bg-surface/50 -mx-2 px-2 rounded-lg"
               >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface">
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface">
                     <ArrowLeftRight className="h-4 w-4 text-muted" />
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-navy">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-navy">
                       {tx.description}
                     </p>
-                    <p className="text-xs text-muted">
+                    <p className="truncate text-xs text-muted">
                       {translateCategory(t, tx.category)}
                     </p>
                   </div>
                 </div>
                 <span
                   className={cn(
-                    "text-sm font-semibold",
+                    "shrink-0 text-sm font-semibold",
                     tx.amount >= 0 ? "text-success" : "text-navy",
                   )}
                 >

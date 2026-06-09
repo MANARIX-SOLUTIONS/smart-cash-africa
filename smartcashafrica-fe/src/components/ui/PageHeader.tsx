@@ -13,7 +13,7 @@ export function PageHeader({ title, subtitle, action }: PageHeaderProps) {
         </h1>
         {subtitle && <p className="mt-1 text-base text-muted">{subtitle}</p>}
       </div>
-      {action}
+      {action && <div className="shrink-0">{action}</div>}
     </div>
   );
 }

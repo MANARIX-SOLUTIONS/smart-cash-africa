@@ -32,15 +32,15 @@ export function FinancialHealth() {
   return (
     <div className="space-y-8 animate-fade-in">
       <div>
-        <h1 className="text-[40px] font-bold tracking-tight text-navy">
+        <h1 className="text-3xl font-bold tracking-tight text-navy sm:text-[40px]">
           {t("health.title")}
         </h1>
         <p className="mt-1 text-base text-muted">{t("health.subtitle")}</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <Card className="flex flex-col items-center justify-center py-10 lg:col-span-1">
-          <div className="relative">
+        <Card className="flex flex-col items-center justify-center py-8 sm:py-10 lg:col-span-1">
+          <div className="relative scale-90 sm:scale-100">
             <svg width={200} height={200} className="-rotate-90">
               <circle
                 cx={100}
@@ -88,7 +88,7 @@ export function FinancialHealth() {
           <div className="mt-6 space-y-5">
             {healthScores.categories.map((cat) => (
               <div key={cat.name}>
-                <div className="mb-2 flex items-center justify-between">
+                <div className="mb-2 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                   <span className="text-sm font-medium text-navy">
                     {translateHealthCategory(t, cat.name)}
                   </span>

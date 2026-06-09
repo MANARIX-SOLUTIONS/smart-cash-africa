@@ -67,7 +67,7 @@ export function TransactionDetailDrawer({
       />
       <aside
         className={cn(
-          "relative flex h-full w-full max-w-md flex-col",
+          "relative flex h-full w-full max-w-none flex-col sm:max-w-md",
           "border-l border-border bg-card shadow-2xl",
           "animate-slide-in-right",
         )}

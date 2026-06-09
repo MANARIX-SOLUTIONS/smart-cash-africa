@@ -37,15 +37,16 @@ export function TopNav({ onMenuClick }: TopNavProps) {
     <>
       <header
         className={cn(
-          "sticky top-0 z-30 flex h-16 items-center justify-between gap-4",
-          "border-b border-border bg-card/90 px-4 backdrop-blur-lg sm:px-6",
+          "sticky top-0 z-30 flex h-16 min-w-0 items-center justify-between",
+          "gap-2 border-b border-border bg-card/90 px-3 backdrop-blur-lg",
+          "sm:gap-4 sm:px-6",
           "dark:bg-card/85 dark:shadow-[0_1px_0_0_var(--color-border)]",
         )}
       >
         <button
           onClick={onMenuClick}
           className={cn(
-            "flex h-10 w-10 items-center justify-center rounded-xl",
+            "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
             "border border-border text-muted lg:hidden",
             "transition-colors hover:bg-surface hover:text-navy",
           )}
@@ -57,22 +58,22 @@ export function TopNav({ onMenuClick }: TopNavProps) {
         <button
           onClick={() => setSearchOpen(true)}
           className={cn(
-            "relative flex flex-1 max-w-md items-center gap-3",
-            "h-10 rounded-xl border border-border bg-surface px-3",
+            "relative flex min-w-0 flex-1 items-center gap-2 sm:gap-3",
+            "h-10 max-w-md rounded-xl border border-border bg-surface px-3",
             "text-left transition-all hover:border-primary/30",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20",
           )}
         >
-          <Search className="h-4 w-4 text-muted" />
-          <span className="flex-1 text-sm text-muted">
+          <Search className="h-4 w-4 shrink-0 text-muted" />
+          <span className="hidden min-w-0 flex-1 truncate text-sm text-muted sm:inline">
             {t("common.searchPlaceholder")}
           </span>
-          <kbd className="hidden rounded-md border border-border bg-card px-1.5 py-0.5 text-[10px] text-muted sm:inline">
+          <kbd className="ml-auto hidden shrink-0 rounded-md border border-border bg-card px-1.5 py-0.5 text-[10px] text-muted md:inline">
             ⌘K
           </kbd>
         </button>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
           <button
             onClick={toggleTheme}
             className={cn(

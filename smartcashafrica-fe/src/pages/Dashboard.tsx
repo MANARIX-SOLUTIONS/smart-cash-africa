@@ -128,7 +128,7 @@ export function Dashboard() {
         </div>
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+      <section className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
         {summaryCards.map((card) => {
           const Icon = iconMap[card.icon as keyof typeof iconMap];
           const isPositive =
@@ -358,15 +358,15 @@ export function Dashboard() {
                   <Link
                     key={tx.id}
                     to={`/transactions/${tx.id}`}
-                    className="flex items-center justify-between py-3 first:pt-0 transition-colors hover:bg-surface/50 -mx-2 px-2 rounded-lg"
+                    className="flex items-center justify-between gap-3 py-3 first:pt-0 transition-colors hover:bg-surface/50 -mx-2 px-2 rounded-lg"
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex min-w-0 flex-1 items-center gap-3">
                       {account ? (
                         <AccountProviderLogo account={account} size="md" />
                       ) : (
                         <div
                           className={cn(
-                            "flex h-11 w-11 items-center justify-center",
+                            "flex h-11 w-11 shrink-0 items-center justify-center",
                             "rounded-xl text-xs font-bold",
                             tx.amount >= 0
                               ? "bg-green-50 text-success dark:bg-green-950"
@@ -376,18 +376,18 @@ export function Dashboard() {
                           {tx.category.slice(0, 2).toUpperCase()}
                         </div>
                       )}
-                      <div>
-                        <p className="text-sm font-medium text-navy">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium text-navy">
                           {tx.description}
                         </p>
-                        <p className="text-xs text-muted">
+                        <p className="truncate text-xs text-muted">
                           {tx.account} · {translateCategory(t, tx.category)}
                         </p>
                       </div>
                     </div>
                     <span
                       className={cn(
-                        "text-sm font-semibold",
+                        "shrink-0 text-sm font-semibold",
                         tx.amount >= 0 ? "text-success" : "text-navy",
                       )}
                     >

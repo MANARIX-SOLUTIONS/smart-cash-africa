@@ -185,28 +185,29 @@ export function Settings() {
   return (
     <div className="space-y-8 animate-fade-in">
       <div>
-        <h1 className="text-[40px] font-bold tracking-tight text-navy">
+        <h1 className="text-3xl font-bold tracking-tight text-navy sm:text-[40px]">
           {t("settings.title")}
         </h1>
         <p className="mt-1 text-base text-muted">{t("settings.subtitle")}</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-4">
-        <Card padding="sm" className="h-fit lg:col-span-1">
-          <nav className="space-y-1">
+        <Card padding="sm" className="h-fit overflow-hidden lg:col-span-1">
+          <nav className="flex gap-1 overflow-x-auto pb-1 lg:flex-col lg:space-y-1 lg:overflow-visible lg:pb-0">
             {sections.map(({ id, label, icon: Icon }) => (
               <Link
                 key={id}
                 to={`/settings/${id}`}
                 className={cn(
-                  "flex w-full items-center gap-3 rounded-xl px-3 py-2.5",
-                  "text-sm font-medium transition-colors",
+                  "flex shrink-0 items-center gap-2 rounded-xl px-3 py-2.5",
+                  "text-sm font-medium whitespace-nowrap transition-colors",
+                  "lg:w-full lg:gap-3 lg:whitespace-normal",
                   active === id
                     ? "bg-primary-light text-primary"
                     : "text-muted hover:bg-surface hover:text-navy",
                 )}
               >
-                <Icon className="h-4 w-4" />
+                <Icon className="h-4 w-4 shrink-0" />
                 {label}
               </Link>
             ))}

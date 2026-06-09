@@ -124,9 +124,12 @@ export function Transactions() {
               size="md"
               onClick={() => setShowFilters((v) => !v)}
               aria-expanded={showFilters}
+              className="shrink-0"
             >
               <SlidersHorizontal className="h-4 w-4" />
-              {t("transactions.filters")}
+              <span className="hidden sm:inline">
+                {t("transactions.filters")}
+              </span>
             </Button>
           </div>
           {showFilters && (
@@ -203,60 +206,111 @@ export function Transactions() {
             {t("transactions.empty")}
           </p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[800px]">
-              <thead>
-                <tr className="border-b border-border bg-surface/50 text-left text-xs font-medium uppercase tracking-wider text-muted">
-                  <th className="px-6 py-4">{t("common.date")}</th>
-                  <th className="px-6 py-4">{t("common.description")}</th>
-                  <th className="px-6 py-4">{t("common.provider")}</th>
-                  <th className="px-6 py-4">{t("common.category")}</th>
-                  <th className="px-6 py-4 text-right">{t("common.amount")}</th>
-                  <th className="px-6 py-4">{t("common.status")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((tx) => (
-                  <tr
-                    key={tx.id}
-                    onClick={() => setSelectedTx(tx)}
-                    className="cursor-pointer border-b border-border/60 transition-colors hover:bg-surface/80"
-                  >
-                    <td className="px-6 py-4 text-sm text-muted">
-                      {new Date(tx.date).toLocaleDateString(intlLocale, {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </td>
-                    <td className="px-6 py-4 text-sm font-medium text-navy">
-                      {tx.description}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-muted">
-                      {tx.account}
-                    </td>
-                    <td className="px-6 py-4">
+          <>
+            <div className="divide-y divide-border md:hidden">
+              {filtered.map((tx) => (
+                <button
+                  key={tx.id}
+                  type="button"
+                  onClick={() => setSelectedTx(tx)}
+                  className="flex w-full items-start gap-3 px-4 py-4 text-left transition-colors hover:bg-surface/80"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="truncate text-sm font-medium text-navy">
+                        {tx.description}
+                      </p>
+                      <span
+                        className={cn(
+                          "shrink-0 text-sm font-semibold",
+                          tx.amount >= 0 ? "text-success" : "text-navy",
+                        )}
+                      >
+                        {tx.amount >= 0 ? "+" : ""}
+                        {formatMoney(Math.abs(tx.amount))}
+                      </span>
+                    </div>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <span className="text-xs text-muted">
+                        {new Date(tx.date).toLocaleDateString(intlLocale, {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </span>
+                      <span className="text-xs text-muted">·</span>
+                      <span className="truncate text-xs text-muted">
+                        {tx.account}
+                      </span>
+                    </div>
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
                       <Badge>{translateCategory(t, tx.category)}</Badge>
-                    </td>
-                    <td
-                      className={cn(
-                        "px-6 py-4 text-right text-sm font-semibold",
-                        tx.amount >= 0 ? "text-success" : "text-navy",
-                      )}
-                    >
-                      {tx.amount >= 0 ? "+" : ""}
-                      {formatMoney(Math.abs(tx.amount))}
-                    </td>
-                    <td className="px-6 py-4">
                       <Badge variant={statusVariant[tx.status]}>
                         {translateStatus(t, tx.status)}
                       </Badge>
-                    </td>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            <div className="hidden overflow-x-auto md:block">
+              <table className="w-full min-w-[640px] lg:min-w-[800px]">
+                <thead>
+                  <tr className="border-b border-border bg-surface/50 text-left text-xs font-medium uppercase tracking-wider text-muted">
+                    <th className="px-6 py-4">{t("common.date")}</th>
+                    <th className="px-6 py-4">{t("common.description")}</th>
+                    <th className="px-6 py-4">{t("common.provider")}</th>
+                    <th className="px-6 py-4">{t("common.category")}</th>
+                    <th className="px-6 py-4 text-right">
+                      {t("common.amount")}
+                    </th>
+                    <th className="px-6 py-4">{t("common.status")}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {filtered.map((tx) => (
+                    <tr
+                      key={tx.id}
+                      onClick={() => setSelectedTx(tx)}
+                      className="cursor-pointer border-b border-border/60 transition-colors hover:bg-surface/80"
+                    >
+                      <td className="px-6 py-4 text-sm text-muted">
+                        {new Date(tx.date).toLocaleDateString(intlLocale, {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </td>
+                      <td className="px-6 py-4 text-sm font-medium text-navy">
+                        {tx.description}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-muted">
+                        {tx.account}
+                      </td>
+                      <td className="px-6 py-4">
+                        <Badge>{translateCategory(t, tx.category)}</Badge>
+                      </td>
+                      <td
+                        className={cn(
+                          "px-6 py-4 text-right text-sm font-semibold",
+                          tx.amount >= 0 ? "text-success" : "text-navy",
+                        )}
+                      >
+                        {tx.amount >= 0 ? "+" : ""}
+                        {formatMoney(Math.abs(tx.amount))}
+                      </td>
+                      <td className="px-6 py-4">
+                        <Badge variant={statusVariant[tx.status]}>
+                          {translateStatus(t, tx.status)}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </Card>
 
@@ -269,9 +323,10 @@ export function Transactions() {
         type="button"
         onClick={() => openAddTransaction("expense")}
         className={cn(
-          "fixed bottom-6 right-6 z-20 flex h-14 w-14 items-center",
+          "fixed bottom-6 right-4 z-20 flex h-14 w-14 items-center",
           "justify-center rounded-full bg-primary text-white shadow-lg",
-          "transition-transform hover:scale-105 active:scale-95 sm:hidden",
+          "transition-transform hover:scale-105 active:scale-95 sm:right-6 sm:hidden",
+          "max-[480px]:bottom-[max(1.5rem,env(safe-area-inset-bottom))]",
         )}
         aria-label={t("transactions.add")}
       >

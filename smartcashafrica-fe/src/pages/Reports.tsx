@@ -86,25 +86,33 @@ export function Reports() {
                   </div>
                 </div>
 
-                <div className="mt-4 flex gap-2 border-t border-border pt-4">
-                  <Link to={`/reports/${report.id}`} className="flex-1">
+                <div className="mt-4 flex flex-col gap-2 border-t border-border pt-4 sm:flex-row sm:flex-wrap">
+                  <Link
+                    to={`/reports/${report.id}`}
+                    className="w-full sm:w-auto sm:flex-1"
+                  >
                     <Button variant="primary" size="sm" className="w-full">
                       <Eye className="h-3.5 w-3.5" />
                       {t("common.view")}
                     </Button>
                   </Link>
-                  {exportFormats.map((format) => (
-                    <Button
-                      key={format}
-                      variant="outline"
-                      size="sm"
-                      className="flex-1"
-                      onClick={() => handleExport(translated.name, format)}
-                    >
-                      <Download className="h-3.5 w-3.5" />
-                      {translateExportFormat(t, format)}
-                    </Button>
-                  ))}
+                  <div className="grid grid-cols-3 gap-2 sm:contents">
+                    {exportFormats.map((format) => (
+                      <Button
+                        key={format}
+                        variant="outline"
+                        size="sm"
+                        className="w-full sm:flex-1"
+                        onClick={() => handleExport(translated.name, format)}
+                      >
+                        <Download className="h-3.5 w-3.5" />
+                        <span className="hidden sm:inline">
+                          {translateExportFormat(t, format)}
+                        </span>
+                        <span className="sm:hidden">{format}</span>
+                      </Button>
+                    ))}
+                  </div>
                 </div>
               </Card>
             );

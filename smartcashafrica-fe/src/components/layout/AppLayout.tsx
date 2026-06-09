@@ -9,7 +9,7 @@ export function AppLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen overflow-x-clip bg-background">
       <Sidebar
         collapsed={collapsed}
         mobileOpen={mobileOpen}
@@ -23,7 +23,7 @@ export function AppLayout() {
         )}
       >
         <TopNav onMenuClick={() => setMobileOpen(true)} />
-        <main className="mx-auto max-w-[1440px] p-4 sm:p-6 lg:p-8">
+        <main className="mx-auto w-full max-w-[1440px] p-4 sm:p-6 lg:p-8">
           <Outlet />
         </main>
       </div>

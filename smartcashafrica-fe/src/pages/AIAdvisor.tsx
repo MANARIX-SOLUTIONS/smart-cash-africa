@@ -78,29 +78,31 @@ export function AIAdvisor() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] flex-col animate-fade-in">
-      <div className="mb-6">
+    <div className="flex min-h-[calc(100dvh-8rem)] flex-col animate-fade-in">
+      <div className="mb-4 sm:mb-6">
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/20">
-            <Zap className="h-6 w-6" />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/20 sm:h-12 sm:w-12">
+            <Zap className="h-5 w-5 sm:h-6 sm:w-6" />
           </div>
-          <div>
-            <h1 className="text-[40px] font-bold tracking-tight text-navy">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold tracking-tight text-navy sm:text-3xl lg:text-[40px]">
               {t("advisor.title")}
             </h1>
-            <p className="text-base text-muted">{t("advisor.subtitle")}</p>
+            <p className="text-sm text-muted sm:text-base">
+              {t("advisor.subtitle")}
+            </p>
           </div>
         </div>
       </div>
 
-      <Card className="flex flex-1 flex-col overflow-hidden p-0">
-        <div className="border-b border-border bg-surface/50 px-6 py-3">
+      <Card className="flex min-h-0 flex-1 flex-col overflow-hidden p-0">
+        <div className="border-b border-border bg-surface/50 px-4 py-3 sm:px-6">
           <p className="text-xs font-medium uppercase tracking-wide text-muted">
             {t("advisor.capabilities")}
           </p>
         </div>
 
-        <div className="flex-1 space-y-4 overflow-y-auto p-6">
+        <div className="flex-1 space-y-4 overflow-y-auto p-4 sm:p-6">
           {messages.map((msg) => (
             <div
               key={msg.id}
@@ -116,7 +118,7 @@ export function AIAdvisor() {
               )}
               <div
                 className={cn(
-                  "max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed",
+                  "max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed sm:max-w-[75%]",
                   msg.role === "user"
                     ? "bg-primary text-white"
                     : "border border-border bg-surface text-navy",
@@ -150,7 +152,7 @@ export function AIAdvisor() {
           )}
         </div>
 
-        <div className="border-t border-border bg-surface/30 p-4">
+        <div className="border-t border-border bg-surface/30 p-3 sm:p-4">
           <div className="mb-3 flex flex-wrap gap-2">
             {suggestions.map((suggestion) => (
               <button
